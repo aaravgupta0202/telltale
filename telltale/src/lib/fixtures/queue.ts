@@ -1,4 +1,5 @@
 import { SUBJECTS } from "./population";
+import { AGENT_SUBJECTS } from "./agent-scenario";
 import type { Subject } from "./types";
 
 /**
@@ -11,6 +12,9 @@ import type { Subject } from "./types";
  * the page and it is deliberate — a 0.55 on production credentials outranks a
  * 0.80 on a marketing folder, and it should (master doc §1.10).
  *
+ * #A-0317 is an AI agent, registered outside the seeded population (see
+ * agent-scenario.ts). It ranks third: 86 × 0.95 = 81.7.
+ *
  * Priya (#8830) is absent: she was suppressed. The link at the top of the page
  * goes to the log that proves it.
  */
@@ -18,6 +22,7 @@ import type { Subject } from "./types";
 const ORDER = [
   "subject_4912",
   "subject_7741",
+  "subject_A-0317",
   "subject_2071",
   "subject_5530",
   "subject_1188",
@@ -36,6 +41,7 @@ const ORDER = [
 const AGES: Record<string, string> = {
   subject_4912: "18h 17m",
   subject_7741: "41m",
+  "subject_A-0317": "12h 45m",
   subject_2071: "4h 40m",
   subject_5530: "3h 02m",
   subject_1188: "4h 37m",
@@ -56,7 +62,7 @@ export interface QueueRow extends Subject {
 }
 
 export const QUEUE_ROWS: QueueRow[] = ORDER.map((id, i) => {
-  const subject = SUBJECTS.find((s) => s.id === id);
+  const subject = [...SUBJECTS, ...AGENT_SUBJECTS].find((s) => s.id === id);
   if (!subject) throw new Error(`queue references unknown subject ${id}`);
   return { ...subject, rank: i + 1, age: AGES[id] };
 });
@@ -64,9 +70,9 @@ export const QUEUE_ROWS: QueueRow[] = ORDER.map((id, i) => {
 /** Rows after this index render at 60% opacity. Nothing is hidden. */
 export const TRIAGE_CAPACITY_AFTER_RANK = 7;
 export const TRIAGE_CAPACITY_LABEL =
-  "Today's triage capacity — 6 analyst-hours";
+  "Today's checking time: 6 analyst-hours";
 
 export const QUEUE_SORT_FOOTNOTE =
-  "Ranked by expected cost of inaction — calibrated probability × asset criticality — not by raw risk. Row 2 carries a higher score than row 1 on a less critical asset, so it ranks below it.";
+  "The order is score × how important the system is, not the score alone. That is why #7741 (score 96) sits below #4912 (score 93): #4912 touched the payments code, which matters more.";
 
 export const SUPPRESSED_TODAY = 1847;

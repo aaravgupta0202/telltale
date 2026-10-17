@@ -10,19 +10,19 @@ import type {
 /* PRD §5.2: four context chips, and red only where something is genuinely wrong. */
 const VERDICT: Record<ContextVerdict, { label: string; className: string }> = {
   authorised: {
-    label: "Authorised",
+    label: "Approved",
     className: "border-emerald-200 bg-emerald-50 text-emerald-800",
   },
   partial: {
-    label: "Partial",
+    label: "Partly approved",
     className: "border-slate-200 bg-slate-100 text-slate-600",
   },
   absent: {
-    label: "Absent",
+    label: "No approval",
     className: "border-amber-200 bg-amber-50 text-amber-800",
   },
   suspicious: {
-    label: "Suspicious",
+    label: "Fake approval",
     className: "border-red-200 bg-red-50 text-red-800",
   },
 };
@@ -56,9 +56,9 @@ export function VerdictChip({
 }
 
 const IDENTITY: Record<IdentityClass, { Icon: typeof User; title: string }> = {
-  human: { Icon: User, title: "Human identity" },
-  service: { Icon: Server, title: "Service identity" },
-  agent: { Icon: Bot, title: "Autonomous agent identity" },
+  human: { Icon: User, title: "A person's account" },
+  service: { Icon: Server, title: "An automated service account" },
+  agent: { Icon: Bot, title: "An AI agent" },
 };
 
 export function IdentityGlyph({
@@ -80,8 +80,8 @@ export function IdentityGlyph({
 
 const STATUS: Record<SubjectStatus, string> = {
   new: "New",
-  triaging: "Triaging",
-  suppressed: "Suppressed",
+  triaging: "Being checked",
+  suppressed: "Closed: explained",
   confirmed: "Confirmed",
 };
 

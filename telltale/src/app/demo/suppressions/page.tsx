@@ -17,41 +17,41 @@ export default function SuppressionsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Security module"
-        title="Approved, not discarded."
-        description="Every anomaly explained away by context is retained with the record that explained it, who created that record, and when. Full auditability for every automated approval."
+        eyebrow="Security part"
+        title="Approved activity"
+        description="Unusual events that tellTale closed automatically because a company record explained them. Each one is kept with the record, who created it and when, so anyone can check the decision later."
       />
 
       <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <Stat
           icon={ShieldCheck}
-          label="Approved today"
+          label="Closed automatically"
           value={SUPPRESSED_BY_CONTEXT.toLocaleString("en-US")}
-          sub={`${pct}% of ${RAISED_ANOMALIES.toLocaleString("en-US")} raised`}
+          sub={`${pct}% of ${RAISED_ANOMALIES.toLocaleString("en-US")} unusual events`}
         />
         <Stat
           icon={ListFilter}
           label="Shown here"
           value={String(SUPPRESSIONS.length)}
-          sub="most recent, all reason codes"
+          sub="the most recent ones, every reason"
         />
         <Stat
           icon={AlertCircle}
-          label="Under review"
+          label="Reopened"
           value={String(underReview)}
-          sub="reopened by the context detector"
+          sub="the approving ticket turned out to be self-made"
         />
         <Stat
           icon={Trash2}
           label="Deleted"
           value="0"
-          sub="suppression is reversible by design"
+          sub="nothing is thrown away; every close can be undone"
         />
       </div>
 
       <Panel
         bodyClassName="p-0"
-        footnote="Retention here makes every automatic approval checkable. A reviewer can take any suppressed anomaly, read the record that approved it, and disagree: which keeps the system fully accountable."
+        footnote="Keeping these means every automatic decision can be checked. Anyone reviewing can open a row, read the record that approved it, and disagree."
       >
         <SuppressionTable />
       </Panel>

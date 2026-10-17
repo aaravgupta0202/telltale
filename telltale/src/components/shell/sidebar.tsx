@@ -11,6 +11,8 @@ import {
   BarChart3,
   Camera,
   Info,
+  FlaskConical,
+  Scale,
   PanelLeftClose,
   PanelLeftOpen,
   X,
@@ -43,7 +45,13 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   "/demo/workforce/usage": BarChart3,
   "/demo/workforce/captures": Camera,
   "/demo/about": Info,
+  "/demo/fool-it": FlaskConical,
 };
+
+const FOOTER_LINKS = [
+  { href: "/demo/legal", label: "Legality", Icon: Scale },
+  { href: "/demo/about", label: "About this demo", Icon: Info },
+];
 
 /**
  * The collapse used to swap in an entirely different subtree per row — one
@@ -120,7 +128,7 @@ export function Sidebar() {
                   tellTale
                 </span>
                 <span className="truncate text-[10px] text-slate-500 font-medium">
-                  Activity & Risk Monitor
+                  Behaviour change alerts
                 </span>
               </div>
             </Link>
@@ -163,7 +171,7 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 overflow-x-hidden overflow-y-auto px-2 py-3">
         <p className={collapsible(collapsed, "label mb-1.5 px-2 text-grey")}>
-          {mod === "risk" ? "Risk · pseudonymous" : "Workforce · named"}
+          {mod === "risk" ? "Security · accounts shown as IDs" : "HR · people shown by name"}
         </p>
         <ul className="space-y-0.5">
           {items.map((item) => (
@@ -184,31 +192,33 @@ export function Sidebar() {
           <ProfileChip />
         </div>
 
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Link
-                href="/demo/about"
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "flex items-center gap-2 rounded-sm px-2 py-1.5 text-xs text-slate-600 hover:bg-emerald-50 hover:text-emerald-800 transition-colors",
-                  pathname === "/demo/about" && "bg-emerald-50 text-emerald-800 font-semibold",
-                )}
-              />
-            }
-          >
-            <Info className="size-3.5 shrink-0" />
-            <span className={collapsible(collapsed)}>About this build</span>
-          </TooltipTrigger>
-          {collapsed && (
-            <TooltipContent
-              side="right"
-              className="border border-slate-800 bg-slate-900 text-white"
+        {FOOTER_LINKS.map(({ href, label, Icon }) => (
+          <Tooltip key={href}>
+            <TooltipTrigger
+              render={
+                <Link
+                  href={href}
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "flex items-center gap-2 rounded-sm px-2 py-1.5 text-xs text-slate-600 hover:bg-emerald-50 hover:text-emerald-800 transition-colors",
+                    pathname === href && "bg-emerald-50 text-emerald-800 font-semibold",
+                  )}
+                />
+              }
             >
-              About this build
-            </TooltipContent>
-          )}
-        </Tooltip>
+              <Icon className="size-3.5 shrink-0" />
+              <span className={collapsible(collapsed)}>{label}</span>
+            </TooltipTrigger>
+            {collapsed && (
+              <TooltipContent
+                side="right"
+                className="border border-slate-800 bg-slate-900 text-white"
+              >
+                {label}
+              </TooltipContent>
+            )}
+          </Tooltip>
+        ))}
 
         {/* Honesty badge (PRD §4) — must render in HTML regardless of width,
             so check-export.mjs finds it on every page. No pulse: the whole

@@ -24,10 +24,10 @@ export function ProfileChip() {
       >
         <div className="flex items-center gap-1.5">
           <Globe className="size-3.5 text-emerald-600" />
-          <span className="label text-slate-500 text-[10px]">Profile</span>
+          <span className="label text-slate-500 text-[10px]">Country rules</span>
         </div>
         <span className="machine text-[11px] font-bold text-emerald-700">
-          FULL (INDIA/US)
+          INDIA / US
         </span>
       </TooltipTrigger>
       <TooltipContent
@@ -38,23 +38,22 @@ export function ProfileChip() {
         <div className="space-y-2 text-xs leading-relaxed">
           <p>
             <span className="label block text-emerald-400 font-semibold mb-0.5">
-              Full profile enables
+              Switched on here
             </span>
-            Cloud plane · Sensor metadata · presence · scheduled capture ·
-            triggered capture · workforce module. India: DPDP s.7(i), both
-            limbs. US: company-device policy with notice.
+            Cloud activity, the desktop app, regular and alert-triggered
+            screenshots, and the HR part. Allowed on company devices with
+            notice to staff (India DPDP Act s.7(i); US company-device policy).
           </p>
           <p>
             <span className="label block text-amber-400 font-semibold mb-0.5">
-              EU standard would disable
+              Under EU rules
             </span>
-            Scheduled capture off; workforce module limited to aggregate
-            reporting. Triggered capture stays — dormant until behaviour
-            justifies it.
+            No regular screenshots, and HR reports only show team totals.
+            Screenshots around a serious alert stay available.
           </p>
           <p className="text-slate-400 text-[11px] pt-1 border-t border-slate-800">
-            Changing profile is a logged administrative act requiring two
-            approvals.
+            Changing country rules is logged and needs two approvals. See the
+            Legality page for all profiles.
           </p>
         </div>
       </TooltipContent>

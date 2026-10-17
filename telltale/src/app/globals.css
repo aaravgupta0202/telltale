@@ -2,6 +2,11 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Dark mode follows the .dark class the theme toggle sets on <html>, not the
+   OS preference — otherwise a dark-mode OS gets dark utility colours on a
+   light page. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
  * tellTale palette. Slate ink on a warm-white canvas, emerald reserved for
  * things that are actually true (healthy, authorised, suppressed) rather than

@@ -25,10 +25,10 @@ const prefix = (href: string) => (p: string) => {
 };
 
 export const RISK_NAV: NavItem[] = [
-  { href: "/demo", label: "Dashboard", match: exact("/demo") },
+  { href: "/demo", label: "Overview", match: exact("/demo") },
   {
     href: "/demo/queue",
-    label: "Review alerts",
+    label: "Alerts to review",
     match: (p) => prefix("/demo/queue")(p) || prefix("/demo/subject")(p),
   },
   {
@@ -41,12 +41,17 @@ export const RISK_NAV: NavItem[] = [
     label: "Approved activity",
     match: prefix("/demo/suppressions"),
   },
+  {
+    href: "/demo/fool-it",
+    label: "Try to fool it",
+    match: prefix("/demo/fool-it"),
+  },
 ];
 
 export const WORKFORCE_NAV: NavItem[] = [
   {
     href: "/demo/workforce",
-    label: "Team overview",
+    label: "People overview",
     match: (p) =>
       prefix("/demo/workforce")(p) &&
       !prefix("/demo/workforce/usage")(p) &&
@@ -71,7 +76,7 @@ export const MODULE_HOME: Record<Module, string> = {
 
 export const MODULE_ROLE: Record<Module, string> = {
   risk: "SECURITY ANALYST",
-  workforce: "WORKFORCE ADMIN",
+  workforce: "HR / WORKFORCE ADMIN",
 };
 
 /** The active module is derived from the URL: nothing is persisted. */
@@ -81,9 +86,10 @@ export function moduleForPath(pathname: string): Module {
 
 /** Presenter shorthand names appear here and nowhere else in the UI (PRD §6). */
 export const DEMO_SCENARIOS = [
-  { label: "Priya - Normal Work (Approved)", href: "/demo/subject/8830" },
-  { label: "Marcus - Suspicious Activity", href: "/demo/subject/4912" },
-  { label: "Dana - Fake Approval", href: "/demo/subject/2071" },
+  { label: "Person 1: approved work", href: "/demo/subject/8830" },
+  { label: "Person 2: data theft", href: "/demo/subject/4912" },
+  { label: "Person 3: fake ticket", href: "/demo/subject/2071" },
+  { label: "AI agent: hijacked", href: "/demo/subject/A-0317" },
 ] as const;
 
 /** Single synthetic day every fixture lives on (PRD §4, §6). */

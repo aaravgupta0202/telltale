@@ -18,15 +18,15 @@ export default function QueuePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Security module"
-        title="Review alerts"
-        description="Ranked by priority score so critical assets are handled first. Seven items sit inside today's review capacity; the rest remain visible and tracked."
+        eyebrow="Security part"
+        title="Alerts to review"
+        description="Each row is one account whose behaviour changed and that nothing in the company's records explains. The most urgent are at the top. Click a row to open its case."
         right={
           <Link
             href="/demo/suppressions"
             className="flex items-center gap-2 rounded-sm border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 hover:border-emerald-400 transition-colors"
           >
-            {SUPPRESSED_TODAY.toLocaleString("en-US")} auto-approved today: view log
+            {SUPPRESSED_TODAY.toLocaleString("en-US")} closed automatically today: see why
             <ArrowUpRight className="size-4" />
           </Link>
         }
@@ -35,27 +35,27 @@ export default function QueuePage() {
       <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <Stat
           icon={Inbox}
-          label="In queue"
+          label="Open cases"
           value={String(QUEUE_ROWS.length)}
-          sub="after identity aggregation"
+          sub="one per account, not one per alert"
         />
         <Stat
           icon={Clock}
-          label="Inside capacity"
+          label="Fit in today's time"
           value={String(aboveLine.length)}
-          sub="6 analyst-hours today"
+          sub="the team has 6 analyst-hours today"
         />
         <Stat
           icon={Flame}
-          label="Highest priority score"
+          label="Most urgent"
           value={QUEUE_ROWS[0].pseudonym}
-          sub={`${QUEUE_ROWS[0].expectedCost.toFixed(1)} (risk ${QUEUE_ROWS[0].risk})`}
+          sub={`priority ${QUEUE_ROWS[0].expectedCost.toFixed(1)} (score ${QUEUE_ROWS[0].risk})`}
         />
         <Stat
           icon={ShieldAlert}
-          label="Highest raw risk"
+          label="Highest score"
           value={topByRisk.pseudonym}
-          sub={`risk ${topByRisk.risk} (ranked #${topByRisk.rank})`}
+          sub={`score ${topByRisk.risk}, but ranked #${topByRisk.rank}: less important system`}
         />
       </div>
 

@@ -1,5 +1,6 @@
 import { cn } from "cn";
 import type { Contribution } from "@/lib/fixtures";
+import { signalPlain } from "@/lib/plain";
 
 /**
  * PRD §5.3C: Feature · Evidence · Contribution to logit, one bar per row.
@@ -32,16 +33,16 @@ export function ContributionTable({
         <thead>
           <tr className="border-b border-line bg-slate-50/80">
             <th className="label px-4 py-2.5 text-left text-slate-500 text-[10px]">
-              Feature
+              Signal
             </th>
             <th className="label px-4 py-2.5 text-left text-slate-500 text-[10px]">
-              Evidence
+              What was seen
             </th>
             <th className="label px-4 py-2.5 text-right text-slate-500 text-[10px]">
-              Logit
+              Points
             </th>
             <th className="label w-48 px-4 py-2.5 text-left text-slate-500 text-[10px]">
-              Contribution
+              Lowers ← → Raises
             </th>
           </tr>
         </thead>
@@ -60,18 +61,18 @@ export function ContributionTable({
               >
                 <td className="px-4 py-2.5 align-top">
                   <span
+                    title={signalPlain(c.feature).hint}
                     className={cn(
-                      "font-semibold",
+                      "block font-semibold",
                       zero ? "text-slate-400" : "text-slate-900",
                     )}
                   >
-                    {c.feature}
+                    {signalPlain(c.feature).name}
                   </span>
-                  {intercept && (
-                    <span className="machine ml-1.5 text-[10px] text-slate-500">
-                      β₀
-                    </span>
-                  )}
+                  <span className="text-[10px] text-slate-400">
+                    {c.feature}
+                    {intercept && " · β₀"}
+                  </span>
                 </td>
                 <td className="max-w-md px-4 py-2.5 align-top text-xs leading-relaxed text-slate-600">
                   <EvidenceText text={c.evidence} />
@@ -100,18 +101,21 @@ export function ContributionTable({
         <tfoot>
           <tr className="border-t-2 border-emerald-500 bg-emerald-50/80">
             <td className="px-4 py-3 align-middle font-bold text-emerald-950">
-              Σ contributions
+              Total
+              <span className="block text-[10px] font-normal text-slate-500">Σ contributions</span>
             </td>
-            <td className="machine px-4 py-3 align-middle text-xs text-slate-700">
-              logit {fmt(logitTotal)} → σ(logit) = {probability.toFixed(2)} →
-              risk {risk}
+            <td className="px-4 py-3 align-middle text-xs leading-relaxed text-slate-700">
+              The points add up to <span className="machine font-semibold">{fmt(logitTotal)}</span>.
+              Converted to a likelihood, that is{" "}
+              <span className="machine font-semibold">{Math.round(probability * 100)}%</span>, shown
+              as a score of <span className="machine font-semibold">{risk}</span> out of 100.
             </td>
             <td className="machine px-4 py-3 text-right align-middle font-bold text-emerald-950">
               {fmt(sum)}
             </td>
             <td className="px-4 py-3 align-middle">
-              <span className="machine text-xs font-bold text-emerald-900">
-                calibrated P(malicious) = {probability.toFixed(2)}
+              <span className="text-xs font-bold text-emerald-900">
+                Score {risk} / 100
               </span>
             </td>
           </tr>

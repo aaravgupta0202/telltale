@@ -86,8 +86,8 @@ function CaptureDetailBody({
         <CaptureThumb seed={c.seed} application={c.application} aspect="aspect-16/10" />
         <p className="mt-1.5 text-[11px] text-grey">
           {isReference
-            ? "Generic reference image of this application's real UI, published by the vendor — not a capture of any real screen."
-            : "Generated placeholder, drawn from this capture's committed seed — not a capture of any real screen."}
+            ? "A generic sample image of this app, published by its maker. Not anyone's real screen."
+            : "A generated picture for the demo. Not anyone's real screen."}
         </p>
       </div>
 

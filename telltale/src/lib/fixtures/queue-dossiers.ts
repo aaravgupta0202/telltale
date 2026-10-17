@@ -12,2299 +12,2373 @@ import type { Dossier } from "./types";
  */
 export const QUEUE_DOSSIERS: Dossier[] = [
   {
-    subjectId: "subject_7741",
-    verdictLabel: "CRITICAL",
-    logitTotal: 3.18,
-    probability: 0.96,
-    risk: 96,
-    headline: "Honeytoken credential used",
-    contributions: [
+    "subjectId": "subject_7741",
+    "verdictLabel": "CRITICAL",
+    "logitTotal": 3.18,
+    "probability": 0.96,
+    "risk": 96,
+    "headline": "Used a decoy password planted as a trap",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence:
-          "64 resources vs cohort median 53 (MAD 17) — robust Z = +0.44 — within baseline",
-        logit: 0,
+        "feature": "Volumetric deviation",
+        "evidence": "64 files and systems, against a typical 53 for the team (spread 17) — robust Z = +0.44 — normal for this team",
+        "logit": 0
       },
       {
-        feature: "Resource novelty",
-        evidence: "12 of 64 resources first seen in 180d",
-        logit: 1.08,
+        "feature": "Resource novelty",
+        "evidence": "12 of 64 files and systems used for the first time in 180 days",
+        "logit": 1.08
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "3 sessions from an ASN unseen in 180d",
-        logit: 0.63,
+        "feature": "Geo / ASN novelty",
+        "evidence": "3 logins from a network not seen in 180 days",
+        "logit": 0.63
       },
       {
-        feature: "Privilege change",
-        evidence: "2 permission or policy edits outside the change window",
-        logit: 0.9,
+        "feature": "Privilege change",
+        "evidence": "2 permission or policy changes made outside the approved change window",
+        "logit": 0.9
       },
       {
-        feature: "Deception trigger",
-        evidence:
-          "Decoy credential ci-deploy-svc-legacy presented against ledger-api — prior-seeded weight, exempt from suppression",
-        logit: 2.2,
+        "feature": "Deception trigger",
+        "evidence": "Used the decoy password ci-deploy-svc-legacy on ledger-api. A decoy is never explained away by a ticket",
+        "logit": 2.2
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 5.24 against the order-2 backoff model",
-        logit: 0.27,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 5 sessions here follow this order of actions (session perplexity 5.24)",
+        "logit": 0.27
       },
       {
-        feature: "Context verification",
-        evidence: "ABSENT — no authorising record found in any context source",
-        logit: 0,
-      },
+        "feature": "Context verification",
+        "evidence": "NO APPROVAL — no ticket, on-call shift or HR record covers this",
+        "logit": 0
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "fail",
-        finding: "No context record precedes this activity.",
+        "test": "precedence",
+        "result": "fail",
+        "finding": "No record exists from before this activity."
       },
       {
-        test: "provenance",
-        result: "fail",
-        finding: "No record to attribute.",
+        "test": "provenance",
+        "result": "fail",
+        "finding": "There is no record, so there is no author to check."
       },
       {
-        test: "scope",
-        result: "fail",
-        finding: "No record to resolve against.",
+        "test": "scope",
+        "result": "fail",
+        "finding": "No record mentions the system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "10 peers in Automation Platform, excluding this subject. Median 53 resources, MAD 17.",
-      subjectValue: 64,
-      stats: {
-        cohort: "Automation Platform",
-        n: 10,
-        median: 53,
-        mad: 17,
-        values: [24, 33, 39, 45, 49, 57, 67, 73, 76, 85],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "10 teammates in Automation Platform, not counting this account. Typical: 53 files and systems; spread: 17.",
+      "subjectValue": 64,
+      "stats": {
+        "cohort": "Automation Platform",
+        "n": 10,
+        "median": 53,
+        "mad": 17,
+        "values": [
+          24,
+          33,
+          39,
+          45,
+          49,
+          57,
+          67,
+          73,
+          76,
+          85
+        ]
       },
-      zScore: 0.44,
+      "zScore": 0.44
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Service credential · CI runner",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Service account · build server",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "aws.sts.assume_role",
-          sublabel: "ci-deploy-svc-legacy · decoy credential",
-          sensitivity: "critical",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "aws.sts.assume_role",
+          "sublabel": "ci-deploy-svc-legacy · decoy password",
+          "sensitivity": "critical",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "github.repo.clone",
-          sublabel: "ledger-api · first ever",
-          sensitivity: "critical",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "github.repo.clone",
+          "sublabel": "ledger-api · first ever",
+          "sensitivity": "critical",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "jenkins.job.trigger",
-          sublabel: "deploy-ledger-api · outside change window",
-          sensitivity: "high",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "jenkins.job.trigger",
+          "sublabel": "deploy-ledger-api · outside approved hours",
+          "sensitivity": "high",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.0002,
-          anomalous: true,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.0002,
+          "anomalous": true
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.31,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.31
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.24,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.24
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-7741-1",
-        ts: "2026-09-14T02:18:06Z",
-        kind: "Identity",
-        detail: "okta.session.start — Service credential · CI runner",
-        source: "Okta",
+        "id": "ev-7741-1",
+        "ts": "2026-09-14T02:18:06Z",
+        "kind": "Identity",
+        "detail": "Logged in: Service account · build server (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-7741-2",
-        ts: "2026-09-14T02:24:48Z",
-        kind: "Action",
-        detail: "aws.sts.assume_role — ci-deploy-svc-legacy · decoy credential",
-        source: "AWS CloudTrail",
+        "id": "ev-7741-2",
+        "ts": "2026-09-14T02:24:48Z",
+        "kind": "Action",
+        "detail": "Switched to another access role: ci-deploy-svc-legacy · decoy password (aws.sts.assume_role)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-7741-3",
-        ts: "2026-09-14T02:29:23Z",
-        kind: "Action",
-        detail: "github.repo.clone — ledger-api · first ever",
-        source: "GitHub Enterprise",
+        "id": "ev-7741-3",
+        "ts": "2026-09-14T02:29:23Z",
+        "kind": "Action",
+        "detail": "Copied a code repository: ledger-api · first ever (github.repo.clone)",
+        "source": "GitHub Enterprise"
       },
       {
-        id: "ev-7741-4",
-        ts: "2026-09-14T02:37:19Z",
-        kind: "Action",
-        detail:
-          "jenkins.job.trigger — deploy-ledger-api · outside change window",
-        source: "GitHub Enterprise",
+        "id": "ev-7741-4",
+        "ts": "2026-09-14T02:37:19Z",
+        "kind": "Action",
+        "detail": "Started a deployment job: deploy-ledger-api · outside approved hours (jenkins.job.trigger)",
+        "source": "GitHub Enterprise"
       },
       {
-        id: "ev-7741-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 53 resources (MAD 17)",
-        source: "tellTale",
-      },
+        "id": "ev-7741-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 53 files and systems (spread 17)",
+        "source": "tellTale"
+      }
     ],
-    sensorNote:
-      "Sensor not deployed on this identity; two detectors unavailable — presence divergence and composition drift.",
+    "sensorNote": "This account has no desktop app, so the two signals that need it (activity while the laptop is locked, change in type of work) aren't available."
   },
   {
-    subjectId: "subject_5530",
-    verdictLabel: "HIGH",
-    logitTotal: 1.05,
-    probability: 0.74,
-    risk: 74,
-    headline: "Presence divergence, 8 actions while locked",
-    contributions: [
+    "subjectId": "subject_5530",
+    "verdictLabel": "HIGH",
+    "logitTotal": 1.05,
+    "probability": 0.74,
+    "risk": 74,
+    "headline": "8 actions while their laptop was locked",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence:
-          "34 resources vs cohort median 28.5 (MAD 2.5) — robust Z = +1.48",
-        logit: 0.33,
+        "feature": "Volumetric deviation",
+        "evidence": "34 files and systems, against a typical 28.5 for the team (spread 2.5) — robust Z = +1.48",
+        "logit": 0.33
       },
       {
-        feature: "Resource novelty",
-        evidence: "7 of 34 resources first seen in 180d",
-        logit: 0.63,
+        "feature": "Resource novelty",
+        "evidence": "7 of 34 files and systems used for the first time in 180 days",
+        "logit": 0.63
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "1 session from an ASN unseen in 180d",
-        logit: 0.21,
+        "feature": "Geo / ASN novelty",
+        "evidence": "1 login from a network not seen in 180 days",
+        "logit": 0.21
       },
       {
-        feature: "Presence divergence",
-        evidence:
-          "8 authenticated actions while the endpoint reported locked or idle",
-        logit: 0.88,
+        "feature": "Presence divergence",
+        "evidence": "8 actions while the person's laptop was locked or idle",
+        "logit": 0.88
       },
       {
-        feature: "Composition drift",
-        evidence: "JSD 0.10 vs anchor, net of cohort movement",
-        logit: 0.24,
+        "feature": "Composition drift",
+        "evidence": "The mix of work has shifted compared with 2–3 months ago (JSD 0.10)",
+        "logit": 0.24
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 7.74 against the order-2 backoff model",
-        logit: 0.66,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 8 sessions here follow this order of actions (session perplexity 7.74)",
+        "logit": 0.66
       },
       {
-        feature: "Context verification",
-        evidence: "ABSENT — no authorising record found in any context source",
-        logit: 0,
-      },
+        "feature": "Context verification",
+        "evidence": "NO APPROVAL — no ticket, on-call shift or HR record covers this",
+        "logit": 0
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "fail",
-        finding: "No context record precedes this activity.",
+        "test": "precedence",
+        "result": "fail",
+        "finding": "No record exists from before this activity."
       },
       {
-        test: "provenance",
-        result: "fail",
-        finding: "No record to attribute.",
+        "test": "provenance",
+        "result": "fail",
+        "finding": "There is no record, so there is no author to check."
       },
       {
-        test: "scope",
-        result: "fail",
-        finding: "No record to resolve against.",
+        "test": "scope",
+        "result": "fail",
+        "finding": "No record mentions the system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "14 peers in Platform SRE, excluding this subject. Median 28.5 resources, MAD 2.5.",
-      subjectValue: 34,
-      stats: {
-        cohort: "Platform SRE",
-        n: 14,
-        median: 28.5,
-        mad: 2.5,
-        values: [7, 9, 22, 22, 26, 27, 28, 29, 30, 31, 31, 31, 34, 36],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "14 teammates in Platform SRE, not counting this account. Typical: 28.5 files and systems; spread: 2.5.",
+      "subjectValue": 34,
+      "stats": {
+        "cohort": "Platform SRE",
+        "n": 14,
+        "median": 28.5,
+        "mad": 2.5,
+        "values": [
+          7,
+          9,
+          22,
+          22,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          31,
+          31,
+          34,
+          36
+        ]
       },
-      zScore: 1.48,
+      "zScore": 1.48
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · endpoint reported locked",
-          sensitivity: "medium",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Office network · laptop was locked",
+          "sensitivity": "medium",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "aws.ssm.start_session",
-          sublabel: "bastion-01 · session manager",
-          sensitivity: "high",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "aws.ssm.start_session",
+          "sublabel": "bastion-01 · remote session",
+          "sensitivity": "high",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "rds.snapshot.create",
-          sublabel: "payments-db · manual snapshot",
-          sensitivity: "critical",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "rds.snapshot.create",
+          "sublabel": "payments-db · full copy",
+          "sensitivity": "critical",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "aws.s3.put_object",
-          sublabel: "s3://ops-scratch-3311 · first ever",
-          sensitivity: "critical",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "aws.s3.put_object",
+          "sublabel": "s3://ops-scratch-3311 · first time ever",
+          "sensitivity": "critical",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.22,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.22
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.04,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.04
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.0007,
-          anomalous: true,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.0007,
+          "anomalous": true
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-5530-1",
-        ts: "2026-09-14T03:21:27Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · endpoint reported locked",
-        source: "Okta",
+        "id": "ev-5530-1",
+        "ts": "2026-09-14T03:21:27Z",
+        "kind": "Identity",
+        "detail": "Logged in: Office network · laptop was locked (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-5530-2",
-        ts: "2026-09-14T03:28:16Z",
-        kind: "Action",
-        detail: "aws.ssm.start_session — bastion-01 · session manager",
-        source: "AWS CloudTrail",
+        "id": "ev-5530-2",
+        "ts": "2026-09-14T03:28:16Z",
+        "kind": "Action",
+        "detail": "Opened a remote session on a server: bastion-01 · remote session (aws.ssm.start_session)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-5530-3",
-        ts: "2026-09-14T03:37:19Z",
-        kind: "Action",
-        detail: "rds.snapshot.create — payments-db · manual snapshot",
-        source: "Jira",
+        "id": "ev-5530-3",
+        "ts": "2026-09-14T03:37:19Z",
+        "kind": "Action",
+        "detail": "Copied a whole database: payments-db · full copy (rds.snapshot.create)",
+        "source": "Jira"
       },
       {
-        id: "ev-5530-4",
-        ts: "2026-09-14T03:45:15Z",
-        kind: "Action",
-        detail: "aws.s3.put_object — s3://ops-scratch-3311 · first ever",
-        source: "AWS CloudTrail",
+        "id": "ev-5530-4",
+        "ts": "2026-09-14T03:45:15Z",
+        "kind": "Action",
+        "detail": "aws.s3.put_object: s3://ops-scratch-3311 · first time ever (aws.s3.put_object)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-5530-pr",
-        ts: "2026-09-14T03:21:27Z",
-        kind: "Presence",
-        detail: "Endpoint reported locked across 8 authenticated actions",
-        source: "Sensor",
+        "id": "ev-5530-pr",
+        "ts": "2026-09-14T03:21:27Z",
+        "kind": "Presence",
+        "detail": "Laptop was locked during 8 of this account's actions",
+        "source": "Sensor"
       },
       {
-        id: "ev-5530-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 28.5 resources (MAD 2.5)",
-        source: "tellTale",
-      },
-    ],
+        "id": "ev-5530-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 28.5 files and systems (spread 2.5)",
+        "source": "tellTale"
+      }
+    ]
   },
   {
-    subjectId: "subject_1188",
-    verdictLabel: "HIGH",
-    logitTotal: 0.9,
-    probability: 0.71,
-    risk: 71,
-    headline: "Novel egress path, 3 unaffiliated destinations",
-    contributions: [
+    "subjectId": "subject_1188",
+    "verdictLabel": "HIGH",
+    "logitTotal": 0.9,
+    "probability": 0.71,
+    "risk": 71,
+    "headline": "Sent data to 3 new outside places",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence:
-          "147 resources vs cohort median 50 (MAD 10) — robust Z = +6.54",
-        logit: 1.3,
+        "feature": "Volumetric deviation",
+        "evidence": "147 files and systems, against a typical 50 for the team (spread 10) — robust Z = +6.54",
+        "logit": 1.3
       },
       {
-        feature: "Resource novelty",
-        evidence: "9 of 147 resources first seen in 180d",
-        logit: 0.81,
+        "feature": "Resource novelty",
+        "evidence": "9 of 147 files and systems used for the first time in 180 days",
+        "logit": 0.81
       },
       {
-        feature: "Novel egress path",
-        evidence: "3 destinations outside org accounts, no prior instance",
-        logit: 1.4,
+        "feature": "Novel egress path",
+        "evidence": "Sent data to 3 places outside the company, never used before",
+        "logit": 1.4
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 5.91 against the order-2 backoff model",
-        logit: 0.39,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 6 sessions here follow this order of actions (session perplexity 5.91)",
+        "logit": 0.39
       },
       {
-        feature: "Context verification",
-        evidence:
-          "PARTIAL — scope match failed; the anomaly is real but partly explained",
-        logit: -1.1,
-      },
+        "feature": "Context verification",
+        "evidence": "PARTLY APPROVED — the record doesn't name the exact system touched",
+        "logit": -1.1
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "pass",
-        finding:
-          "Context record precedes the activity by more than the 30-minute minimum.",
+        "test": "precedence",
+        "result": "pass",
+        "finding": "The record was created more than 30 minutes before the activity."
       },
       {
-        test: "provenance",
-        result: "pass",
-        finding: "Assigned by an identity other than the subject.",
+        "test": "provenance",
+        "result": "pass",
+        "finding": "Assigned by someone other than this account."
       },
       {
-        test: "scope",
-        result: "warn",
-        finding: "Record does not name the specific resource touched.",
+        "test": "scope",
+        "result": "warn",
+        "finding": "The record doesn't name the exact system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "11 peers in Data Platform, excluding this subject. Median 50 resources, MAD 10.",
-      subjectValue: 147,
-      stats: {
-        cohort: "Data Platform",
-        n: 11,
-        median: 50,
-        mad: 10,
-        values: [9, 22, 26, 27, 39, 50, 51, 54, 54, 56, 60],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "11 teammates in Data Platform, not counting this account. Typical: 50 files and systems; spread: 10.",
+      "subjectValue": 147,
+      "stats": {
+        "cohort": "Data Platform",
+        "n": 11,
+        "median": 50,
+        "mad": 10,
+        "values": [
+          9,
+          22,
+          26,
+          27,
+          39,
+          50,
+          51,
+          54,
+          54,
+          56,
+          60
+        ]
       },
-      zScore: 6.54,
+      "zScore": 6.54
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Bengaluru",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Bengaluru",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "bigquery.job.query",
-          sublabel: "events.sessions · 41M rows scanned",
-          sensitivity: "high",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "bigquery.job.query",
+          "sublabel": "events.sessions · 41M rows scanned",
+          "sensitivity": "high",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "gcs.object.export",
-          sublabel: "gs://analytics-export · 2.1 GB",
-          sensitivity: "critical",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "gcs.object.export",
+          "sublabel": "gs://analytics-export · 2.1 GB",
+          "sensitivity": "critical",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "gcs.bucket.share",
-          sublabel: "Unaffiliated project · first ever",
-          sensitivity: "critical",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "gcs.bucket.share",
+          "sublabel": "Unknown outside project · first time ever",
+          "sensitivity": "critical",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.29,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.29
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.11,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.11
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.0003,
-          anomalous: true,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.0003,
+          "anomalous": true
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-1188-1",
-        ts: "2026-09-14T10:12:24Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Bengaluru",
-        source: "Okta",
+        "id": "ev-1188-1",
+        "ts": "2026-09-14T10:12:24Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Bengaluru (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-1188-2",
-        ts: "2026-09-14T10:34:58Z",
-        kind: "Action",
-        detail: "bigquery.job.query — events.sessions · 41M rows scanned",
-        source: "Jira",
+        "id": "ev-1188-2",
+        "ts": "2026-09-14T10:34:58Z",
+        "kind": "Action",
+        "detail": "Ran a database query: events.sessions · 41M rows scanned (bigquery.job.query)",
+        "source": "Jira"
       },
       {
-        id: "ev-1188-3",
-        ts: "2026-09-14T10:50:50Z",
-        kind: "Action",
-        detail: "gcs.object.export — gs://analytics-export · 2.1 GB",
-        source: "Google Workspace",
+        "id": "ev-1188-3",
+        "ts": "2026-09-14T10:50:50Z",
+        "kind": "Action",
+        "detail": "Exported data to cloud storage: gs://analytics-export · 2.1 GB (gcs.object.export)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-1188-4",
-        ts: "2026-09-14T11:03:21Z",
-        kind: "Action",
-        detail: "gcs.bucket.share — Unaffiliated project · first ever",
-        source: "Google Workspace",
+        "id": "ev-1188-4",
+        "ts": "2026-09-14T11:03:21Z",
+        "kind": "Action",
+        "detail": "Shared a storage bucket: Unknown outside project · first time ever (gcs.bucket.share)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-1188-ctx",
-        ts: "2026-09-14T08:04:28Z",
-        kind: "Context record",
-        detail:
-          "TICKET-3288 — On-call rotation · scope does not name the resource touched",
-        source: "Jira",
+        "id": "ev-1188-ctx",
+        "ts": "2026-09-14T08:04:28Z",
+        "kind": "Context record",
+        "detail": "TICKET-3288 — On-call shift · doesn't name the system touched",
+        "source": "Jira"
       },
       {
-        id: "ev-1188-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 50 resources (MAD 10)",
-        source: "tellTale",
-      },
+        "id": "ev-1188-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 50 files and systems (spread 10)",
+        "source": "tellTale"
+      }
     ],
-    sensorNote:
-      "Sensor not deployed on this identity; two detectors unavailable — presence divergence and composition drift.",
+    "sensorNote": "This account has no desktop app, so the two signals that need it (activity while the laptop is locked, change in type of work) aren't available."
   },
   {
-    subjectId: "subject_6302",
-    verdictLabel: "ELEVATED",
-    logitTotal: 0.8,
-    probability: 0.69,
-    risk: 69,
-    headline: "Novel egress path, 2 unaffiliated destinations",
-    contributions: [
+    "subjectId": "subject_6302",
+    "verdictLabel": "ELEVATED",
+    "logitTotal": 0.8,
+    "probability": 0.69,
+    "risk": 69,
+    "headline": "Sent data to 2 new outside places",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence:
-          "29 resources vs cohort median 29 (MAD 4) — robust Z = +0.00 — within baseline",
-        logit: 0,
+        "feature": "Volumetric deviation",
+        "evidence": "29 files and systems, against a typical 29 for the team (spread 4) — robust Z = +0.00 — normal for this team",
+        "logit": 0
       },
       {
-        feature: "Resource novelty",
-        evidence: "6 of 29 resources first seen in 180d",
-        logit: 0.54,
+        "feature": "Resource novelty",
+        "evidence": "6 of 29 files and systems used for the first time in 180 days",
+        "logit": 0.54
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "2 sessions from an ASN unseen in 180d",
-        logit: 0.42,
+        "feature": "Geo / ASN novelty",
+        "evidence": "2 logins from a network not seen in 180 days",
+        "logit": 0.42
       },
       {
-        feature: "Novel egress path",
-        evidence: "2 destinations outside org accounts, no prior instance",
-        logit: 1.24,
+        "feature": "Novel egress path",
+        "evidence": "Sent data to 2 places outside the company, never used before",
+        "logit": 1.24
       },
       {
-        feature: "Composition drift",
-        evidence: "JSD 0.14 vs anchor, net of cohort movement",
-        logit: 0.34,
+        "feature": "Composition drift",
+        "evidence": "The mix of work has shifted compared with 2–3 months ago (JSD 0.14)",
+        "logit": 0.34
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 4.69 against the order-2 backoff model",
-        logit: 0.16,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 5 sessions here follow this order of actions (session perplexity 4.69)",
+        "logit": 0.16
       },
       {
-        feature: "Context verification",
-        evidence: "ABSENT — no authorising record found in any context source",
-        logit: 0,
-      },
+        "feature": "Context verification",
+        "evidence": "NO APPROVAL — no ticket, on-call shift or HR record covers this",
+        "logit": 0
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "fail",
-        finding: "No context record precedes this activity.",
+        "test": "precedence",
+        "result": "fail",
+        "finding": "No record exists from before this activity."
       },
       {
-        test: "provenance",
-        result: "fail",
-        finding: "No record to attribute.",
+        "test": "provenance",
+        "result": "fail",
+        "finding": "There is no record, so there is no author to check."
       },
       {
-        test: "scope",
-        result: "fail",
-        finding: "No record to resolve against.",
+        "test": "scope",
+        "result": "fail",
+        "finding": "No record mentions the system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "14 peers in Platform SRE, excluding this subject. Median 29 resources, MAD 4.",
-      subjectValue: 29,
-      stats: {
-        cohort: "Platform SRE",
-        n: 14,
-        median: 29,
-        mad: 4,
-        values: [7, 9, 22, 22, 26, 27, 28, 30, 31, 31, 31, 34, 34, 36],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "14 teammates in Platform SRE, not counting this account. Typical: 29 files and systems; spread: 4.",
+      "subjectValue": 29,
+      "stats": {
+        "cohort": "Platform SRE",
+        "n": 14,
+        "median": 29,
+        "mad": 4,
+        "values": [
+          7,
+          9,
+          22,
+          22,
+          26,
+          27,
+          28,
+          30,
+          31,
+          31,
+          31,
+          34,
+          34,
+          36
+        ]
       },
-      zScore: 0,
+      "zScore": 0
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Bengaluru",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Bengaluru",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "bigquery.job.query",
-          sublabel: "events.sessions · 41M rows scanned",
-          sensitivity: "high",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "bigquery.job.query",
+          "sublabel": "events.sessions · 41M rows scanned",
+          "sensitivity": "high",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "gcs.object.export",
-          sublabel: "gs://analytics-export · 2.1 GB",
-          sensitivity: "critical",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "gcs.object.export",
+          "sublabel": "gs://analytics-export · 2.1 GB",
+          "sensitivity": "critical",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "gcs.bucket.share",
-          sublabel: "Unaffiliated project · first ever",
-          sensitivity: "critical",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "gcs.bucket.share",
+          "sublabel": "Unknown outside project · first time ever",
+          "sensitivity": "critical",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.29,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.29
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.11,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.11
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.0003,
-          anomalous: true,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.0003,
+          "anomalous": true
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-6302-1",
-        ts: "2026-09-14T10:12:24Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Bengaluru",
-        source: "Okta",
+        "id": "ev-6302-1",
+        "ts": "2026-09-14T10:12:24Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Bengaluru (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-6302-2",
-        ts: "2026-09-14T10:34:58Z",
-        kind: "Action",
-        detail: "bigquery.job.query — events.sessions · 41M rows scanned",
-        source: "Jira",
+        "id": "ev-6302-2",
+        "ts": "2026-09-14T10:34:58Z",
+        "kind": "Action",
+        "detail": "Ran a database query: events.sessions · 41M rows scanned (bigquery.job.query)",
+        "source": "Jira"
       },
       {
-        id: "ev-6302-3",
-        ts: "2026-09-14T10:50:50Z",
-        kind: "Action",
-        detail: "gcs.object.export — gs://analytics-export · 2.1 GB",
-        source: "Google Workspace",
+        "id": "ev-6302-3",
+        "ts": "2026-09-14T10:50:50Z",
+        "kind": "Action",
+        "detail": "Exported data to cloud storage: gs://analytics-export · 2.1 GB (gcs.object.export)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-6302-4",
-        ts: "2026-09-14T11:03:21Z",
-        kind: "Action",
-        detail: "gcs.bucket.share — Unaffiliated project · first ever",
-        source: "Google Workspace",
+        "id": "ev-6302-4",
+        "ts": "2026-09-14T11:03:21Z",
+        "kind": "Action",
+        "detail": "Shared a storage bucket: Unknown outside project · first time ever (gcs.bucket.share)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-6302-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 29 resources (MAD 4)",
-        source: "tellTale",
-      },
-    ],
+        "id": "ev-6302-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 29 files and systems (spread 4)",
+        "source": "tellTale"
+      }
+    ]
   },
   {
-    subjectId: "subject_3914",
-    verdictLabel: "ELEVATED",
-    logitTotal: 0.66,
-    probability: 0.66,
-    risk: 66,
-    headline: "Cohort divergence, D = +3.20",
-    contributions: [
+    "subjectId": "subject_3914",
+    "verdictLabel": "ELEVATED",
+    "logitTotal": 0.66,
+    "probability": 0.66,
+    "risk": 66,
+    "headline": "Drifting away from teammates",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence: "22 resources vs cohort median 14 (MAD 6) — robust Z = +0.90",
-        logit: 0.14,
+        "feature": "Volumetric deviation",
+        "evidence": "22 files and systems, against a typical 14 for the team (spread 6) — robust Z = +0.90",
+        "logit": 0.14
       },
       {
-        feature: "Resource novelty",
-        evidence: "4 of 22 resources first seen in 180d",
-        logit: 0.36,
+        "feature": "Resource novelty",
+        "evidence": "4 of 22 files and systems used for the first time in 180 days",
+        "logit": 0.36
       },
       {
-        feature: "Cohort divergence",
-        evidence: "D = +3.20 against the 60–90d anchor, net of cohort movement",
-        logit: 1.15,
+        "feature": "Cohort divergence",
+        "evidence": "Drifting away from teammates compared with 2–3 months ago (D = +3.20)",
+        "logit": 1.15
       },
       {
-        feature: "Privilege change",
-        evidence: "1 permission or policy edit outside the change window",
-        logit: 0.45,
+        "feature": "Privilege change",
+        "evidence": "1 permission or policy change made outside the approved change window",
+        "logit": 0.45
       },
       {
-        feature: "Presence divergence",
-        evidence:
-          "4 authenticated actions while the endpoint reported locked or idle",
-        logit: 0.44,
+        "feature": "Presence divergence",
+        "evidence": "4 actions while the person's laptop was locked or idle",
+        "logit": 0.44
       },
       {
-        feature: "Composition drift",
-        evidence: "JSD 0.11 vs anchor, net of cohort movement",
-        logit: 0.26,
+        "feature": "Composition drift",
+        "evidence": "The mix of work has shifted compared with 2–3 months ago (JSD 0.11)",
+        "logit": 0.26
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 9.45 against the order-2 backoff model",
-        logit: 0.86,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 9 sessions here follow this order of actions (session perplexity 9.45)",
+        "logit": 0.86
       },
       {
-        feature: "Context verification",
-        evidence:
-          "PARTIAL — scope match failed; the anomaly is real but partly explained",
-        logit: -1.1,
-      },
+        "feature": "Context verification",
+        "evidence": "PARTLY APPROVED — the record doesn't name the exact system touched",
+        "logit": -1.1
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "pass",
-        finding:
-          "Context record precedes the activity by more than the 30-minute minimum.",
+        "test": "precedence",
+        "result": "pass",
+        "finding": "The record was created more than 30 minutes before the activity."
       },
       {
-        test: "provenance",
-        result: "pass",
-        finding: "Assigned by an identity other than the subject.",
+        "test": "provenance",
+        "result": "pass",
+        "finding": "Assigned by someone other than this account."
       },
       {
-        test: "scope",
-        result: "warn",
-        finding: "Record does not name the specific resource touched.",
+        "test": "scope",
+        "result": "warn",
+        "finding": "The record doesn't name the exact system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "11 peers in Customer Support, excluding this subject. Median 14 resources, MAD 6.",
-      subjectValue: 22,
-      stats: {
-        cohort: "Customer Support",
-        n: 11,
-        median: 14,
-        mad: 6,
-        values: [3, 6, 8, 10, 11, 14, 14, 19, 20, 21, 96],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "11 teammates in Customer Support, not counting this account. Typical: 14 files and systems; spread: 6.",
+      "subjectValue": 22,
+      "stats": {
+        "cohort": "Customer Support",
+        "n": 11,
+        "median": 14,
+        "mad": 6,
+        "values": [
+          3,
+          6,
+          8,
+          10,
+          11,
+          14,
+          14,
+          19,
+          20,
+          21,
+          96
+        ]
       },
-      zScore: 0.9,
+      "zScore": 0.9
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Pune",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Pune",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "zendesk.ticket.bulk_export",
-          sublabel: "1,204 tickets · CSV",
-          sensitivity: "high",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "zendesk.ticket.bulk_export",
+          "sublabel": "1,204 tickets · CSV",
+          "sensitivity": "high",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "gdrive.file.download",
-          sublabel: "Support — escalations Q3",
-          sensitivity: "medium",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "gdrive.file.download",
+          "sublabel": "Support — escalations Q3",
+          "sensitivity": "medium",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "gdrive.folder.share",
-          sublabel: "Link sharing enabled · first ever",
-          sensitivity: "critical",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "gdrive.folder.share",
+          "sublabel": "Anyone with the link · first time ever",
+          "sensitivity": "critical",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.16,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.16
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.44,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.44
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.006,
-          anomalous: true,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.006,
+          "anomalous": true
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-3914-1",
-        ts: "2026-09-14T09:45:15Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Pune",
-        source: "Okta",
+        "id": "ev-3914-1",
+        "ts": "2026-09-14T09:45:15Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Pune (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-3914-2",
-        ts: "2026-09-14T10:19:13Z",
-        kind: "Action",
-        detail: "zendesk.ticket.bulk_export — 1,204 tickets · CSV",
-        source: "Jira",
+        "id": "ev-3914-2",
+        "ts": "2026-09-14T10:19:13Z",
+        "kind": "Action",
+        "detail": "Exported support tickets: 1,204 tickets · CSV (zendesk.ticket.bulk_export)",
+        "source": "Jira"
       },
       {
-        id: "ev-3914-3",
-        ts: "2026-09-14T10:32:44Z",
-        kind: "Action",
-        detail: "gdrive.file.download — Support — escalations Q3",
-        source: "Google Workspace",
+        "id": "ev-3914-3",
+        "ts": "2026-09-14T10:32:44Z",
+        "kind": "Action",
+        "detail": "Downloaded files from Google Drive: Support — escalations Q3 (gdrive.file.download)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-3914-4",
-        ts: "2026-09-14T10:48:36Z",
-        kind: "Action",
-        detail: "gdrive.folder.share — Link sharing enabled · first ever",
-        source: "Google Workspace",
+        "id": "ev-3914-4",
+        "ts": "2026-09-14T10:48:36Z",
+        "kind": "Action",
+        "detail": "Shared a folder by link: Anyone with the link · first time ever (gdrive.folder.share)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-3914-ctx",
-        ts: "2026-09-14T07:49:43Z",
-        kind: "Context record",
-        detail:
-          "TICKET-3314 — On-call rotation · scope does not name the resource touched",
-        source: "Jira",
+        "id": "ev-3914-ctx",
+        "ts": "2026-09-14T07:49:43Z",
+        "kind": "Context record",
+        "detail": "TICKET-3314 — On-call shift · doesn't name the system touched",
+        "source": "Jira"
       },
       {
-        id: "ev-3914-pr",
-        ts: "2026-09-14T09:45:15Z",
-        kind: "Presence",
-        detail: "Endpoint reported locked across 4 authenticated actions",
-        source: "Sensor",
+        "id": "ev-3914-pr",
+        "ts": "2026-09-14T09:45:15Z",
+        "kind": "Presence",
+        "detail": "Laptop was locked during 4 of this account's actions",
+        "source": "Sensor"
       },
       {
-        id: "ev-3914-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 14 resources (MAD 6)",
-        source: "tellTale",
-      },
-    ],
+        "id": "ev-3914-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 14 files and systems (spread 6)",
+        "source": "tellTale"
+      }
+    ]
   },
   {
-    subjectId: "subject_8125",
-    verdictLabel: "ELEVATED",
-    logitTotal: 0.45,
-    probability: 0.61,
-    risk: 61,
-    headline: "Off-hours activity, 3 sessions",
-    contributions: [
+    "subjectId": "subject_8125",
+    "verdictLabel": "ELEVATED",
+    "logitTotal": 0.45,
+    "probability": 0.61,
+    "risk": 61,
+    "headline": "3 sessions at unusual hours",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence: "44 resources vs cohort median 16 (MAD 7) — robust Z = +2.70",
-        logit: 0.75,
+        "feature": "Volumetric deviation",
+        "evidence": "44 files and systems, against a typical 16 for the team (spread 7) — robust Z = +2.70",
+        "logit": 0.75
       },
       {
-        feature: "Resource novelty",
-        evidence: "5 of 44 resources first seen in 180d",
-        logit: 0.45,
+        "feature": "Resource novelty",
+        "evidence": "5 of 44 files and systems used for the first time in 180 days",
+        "logit": 0.45
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "1 session from an ASN unseen in 180d",
-        logit: 0.21,
+        "feature": "Geo / ASN novelty",
+        "evidence": "1 login from a network not seen in 180 days",
+        "logit": 0.21
       },
       {
-        feature: "Off-hours activity",
-        evidence: "3 sessions outside the subject's own working-hours envelope",
-        logit: 0.9,
+        "feature": "Off-hours activity",
+        "evidence": "3 sessions well outside this person's normal working hours",
+        "logit": 0.9
       },
       {
-        feature: "Presence divergence",
-        evidence:
-          "3 authenticated actions while the endpoint reported locked or idle",
-        logit: 0.33,
+        "feature": "Presence divergence",
+        "evidence": "3 actions while the person's laptop was locked or idle",
+        "logit": 0.33
       },
       {
-        feature: "Composition drift",
-        evidence: "JSD 0.14 vs anchor, net of cohort movement",
-        logit: 0.34,
+        "feature": "Composition drift",
+        "evidence": "The mix of work has shifted compared with 2–3 months ago (JSD 0.14)",
+        "logit": 0.34
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 6.40 against the order-2 backoff model",
-        logit: 0.47,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 6 sessions here follow this order of actions (session perplexity 6.40)",
+        "logit": 0.47
       },
       {
-        feature: "Context verification",
-        evidence:
-          "PARTIAL — scope match failed; the anomaly is real but partly explained",
-        logit: -1.1,
-      },
+        "feature": "Context verification",
+        "evidence": "PARTLY APPROVED — the record doesn't name the exact system touched",
+        "logit": -1.1
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "pass",
-        finding:
-          "Context record precedes the activity by more than the 30-minute minimum.",
+        "test": "precedence",
+        "result": "pass",
+        "finding": "The record was created more than 30 minutes before the activity."
       },
       {
-        test: "provenance",
-        result: "pass",
-        finding: "Assigned by an identity other than the subject.",
+        "test": "provenance",
+        "result": "pass",
+        "finding": "Assigned by someone other than this account."
       },
       {
-        test: "scope",
-        result: "warn",
-        finding: "Record does not name the specific resource touched.",
+        "test": "scope",
+        "result": "warn",
+        "finding": "The record doesn't name the exact system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "13 peers in Finance Operations, excluding this subject. Median 16 resources, MAD 7.",
-      subjectValue: 44,
-      stats: {
-        cohort: "Finance Operations",
-        n: 13,
-        median: 16,
-        mad: 7,
-        values: [6, 8, 12, 12, 12, 14, 16, 18, 23, 26, 26, 28, 48],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "13 teammates in Finance Operations, not counting this account. Typical: 16 files and systems; spread: 7.",
+      "subjectValue": 44,
+      "stats": {
+        "cohort": "Finance Operations",
+        "n": 13,
+        "median": 16,
+        "mad": 7,
+        "values": [
+          6,
+          8,
+          12,
+          12,
+          12,
+          14,
+          16,
+          18,
+          23,
+          26,
+          26,
+          28,
+          48
+        ]
       },
-      zScore: 2.7,
+      "zScore": 2.7
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "03:12 local · outside working envelope",
-          sensitivity: "medium",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "03:12 · outside normal hours",
+          "sensitivity": "medium",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "netsuite.report.run",
-          sublabel: "Vendor master · full extract",
-          sensitivity: "high",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "netsuite.report.run",
+          "sublabel": "All suppliers · full extract",
+          "sensitivity": "high",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "netsuite.export.csv",
-          sublabel: "vendors_full.csv · 8,410 rows",
-          sensitivity: "critical",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "netsuite.export.csv",
+          "sublabel": "vendors_full.csv · 8,410 rows",
+          "sensitivity": "critical",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "gdrive.file.upload",
-          sublabel: "Personal drive · first ever",
-          sensitivity: "critical",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "gdrive.file.upload",
+          "sublabel": "Personal drive · first time ever",
+          "sensitivity": "critical",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.21,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.21
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.33,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.33
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.0009,
-          anomalous: true,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.0009,
+          "anomalous": true
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-8125-1",
-        ts: "2026-09-14T03:12:24Z",
-        kind: "Identity",
-        detail: "okta.session.start — 03:12 local · outside working envelope",
-        source: "Okta",
+        "id": "ev-8125-1",
+        "ts": "2026-09-14T03:12:24Z",
+        "kind": "Identity",
+        "detail": "Logged in: 03:12 · outside normal hours (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-8125-2",
-        ts: "2026-09-14T03:21:27Z",
-        kind: "Action",
-        detail: "netsuite.report.run — Vendor master · full extract",
-        source: "Jira",
+        "id": "ev-8125-2",
+        "ts": "2026-09-14T03:21:27Z",
+        "kind": "Action",
+        "detail": "Ran a finance report: All suppliers · full extract (netsuite.report.run)",
+        "source": "Jira"
       },
       {
-        id: "ev-8125-3",
-        ts: "2026-09-14T03:29:23Z",
-        kind: "Action",
-        detail: "netsuite.export.csv — vendors_full.csv · 8,410 rows",
-        source: "Jira",
+        "id": "ev-8125-3",
+        "ts": "2026-09-14T03:29:23Z",
+        "kind": "Action",
+        "detail": "Exported finance data to a file: vendors_full.csv · 8,410 rows (netsuite.export.csv)",
+        "source": "Jira"
       },
       {
-        id: "ev-8125-4",
-        ts: "2026-09-14T03:40:40Z",
-        kind: "Action",
-        detail: "gdrive.file.upload — Personal drive · first ever",
-        source: "Google Workspace",
+        "id": "ev-8125-4",
+        "ts": "2026-09-14T03:40:40Z",
+        "kind": "Action",
+        "detail": "Uploaded a file to Google Drive: Personal drive · first time ever (gdrive.file.upload)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-8125-ctx",
-        ts: "2026-09-14T00:51:57Z",
-        kind: "Context record",
-        detail:
-          "TICKET-3025 — On-call rotation · scope does not name the resource touched",
-        source: "Jira",
+        "id": "ev-8125-ctx",
+        "ts": "2026-09-14T00:51:57Z",
+        "kind": "Context record",
+        "detail": "TICKET-3025 — On-call shift · doesn't name the system touched",
+        "source": "Jira"
       },
       {
-        id: "ev-8125-pr",
-        ts: "2026-09-14T03:12:24Z",
-        kind: "Presence",
-        detail: "Endpoint reported locked across 3 authenticated actions",
-        source: "Sensor",
+        "id": "ev-8125-pr",
+        "ts": "2026-09-14T03:12:24Z",
+        "kind": "Presence",
+        "detail": "Laptop was locked during 3 of this account's actions",
+        "source": "Sensor"
       },
       {
-        id: "ev-8125-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 16 resources (MAD 7)",
-        source: "tellTale",
-      },
-    ],
+        "id": "ev-8125-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 16 files and systems (spread 7)",
+        "source": "tellTale"
+      }
+    ]
   },
   {
-    subjectId: "subject_4407",
-    verdictLabel: "ELEVATED",
-    logitTotal: 0.32,
-    probability: 0.58,
-    risk: 58,
-    headline: "Graph topology, 5 new external edges",
-    contributions: [
+    "subjectId": "subject_4407",
+    "verdictLabel": "ELEVATED",
+    "logitTotal": 0.32,
+    "probability": 0.58,
+    "risk": 58,
+    "headline": "5 new outside contacts",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence:
-          "14 resources vs cohort median 14 (MAD 6) — robust Z = +0.00 — within baseline",
-        logit: 0,
+        "feature": "Volumetric deviation",
+        "evidence": "14 files and systems, against a typical 14 for the team (spread 6) — robust Z = +0.00 — normal for this team",
+        "logit": 0
       },
       {
-        feature: "Resource novelty",
-        evidence: "4 of 14 resources first seen in 180d",
-        logit: 0.36,
+        "feature": "Resource novelty",
+        "evidence": "4 of 14 files and systems used for the first time in 180 days",
+        "logit": 0.36
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "2 sessions from an ASN unseen in 180d",
-        logit: 0.42,
+        "feature": "Geo / ASN novelty",
+        "evidence": "2 logins from a network not seen in 180 days",
+        "logit": 0.42
       },
       {
-        feature: "Graph topology change",
-        evidence: "5 new external-domain edges this window",
-        logit: 0.95,
+        "feature": "Graph topology change",
+        "evidence": "Contacted 5 outside companies for the first time",
+        "logit": 0.95
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 6.53 against the order-2 backoff model",
-        logit: 0.49,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 7 sessions here follow this order of actions (session perplexity 6.53)",
+        "logit": 0.49
       },
       {
-        feature: "Context verification",
-        evidence: "ABSENT — no authorising record found in any context source",
-        logit: 0,
-      },
+        "feature": "Context verification",
+        "evidence": "NO APPROVAL — no ticket, on-call shift or HR record covers this",
+        "logit": 0
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "fail",
-        finding: "No context record precedes this activity.",
+        "test": "precedence",
+        "result": "fail",
+        "finding": "No record exists from before this activity."
       },
       {
-        test: "provenance",
-        result: "fail",
-        finding: "No record to attribute.",
+        "test": "provenance",
+        "result": "fail",
+        "finding": "There is no record, so there is no author to check."
       },
       {
-        test: "scope",
-        result: "fail",
-        finding: "No record to resolve against.",
+        "test": "scope",
+        "result": "fail",
+        "finding": "No record mentions the system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "11 peers in Customer Support, excluding this subject. Median 14 resources, MAD 6.",
-      subjectValue: 14,
-      stats: {
-        cohort: "Customer Support",
-        n: 11,
-        median: 14,
-        mad: 6,
-        values: [3, 6, 8, 10, 11, 14, 19, 20, 21, 22, 96],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "11 teammates in Customer Support, not counting this account. Typical: 14 files and systems; spread: 6.",
+      "subjectValue": 14,
+      "stats": {
+        "cohort": "Customer Support",
+        "n": 11,
+        "median": 14,
+        "mad": 6,
+        "values": [
+          3,
+          6,
+          8,
+          10,
+          11,
+          14,
+          19,
+          20,
+          21,
+          22,
+          96
+        ]
       },
-      zScore: 0,
+      "zScore": 0
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Chennai",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Chennai",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "gws.mail.filter.create",
-          sublabel: "Auto-forward rule · external domain",
-          sensitivity: "high",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "gws.mail.filter.create",
+          "sublabel": "Auto-forward to an outside address",
+          "sensitivity": "high",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "gws.mail.send_external",
-          sublabel: "4 unaffiliated domains · first ever",
-          sensitivity: "critical",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "gws.mail.send_external",
+          "sublabel": "4 outside companies · first time ever",
+          "sensitivity": "critical",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "gws.contact.export",
-          sublabel: "Directory export · 612 records",
-          sensitivity: "medium",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "gws.contact.export",
+          "sublabel": "Directory export · 612 records",
+          "sensitivity": "medium",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.03,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.03
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.0005,
-          anomalous: true,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.0005,
+          "anomalous": true
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.19,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.19
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-4407-1",
-        ts: "2026-09-14T10:28:16Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Chennai",
-        source: "Okta",
+        "id": "ev-4407-1",
+        "ts": "2026-09-14T10:28:16Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Chennai (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-4407-2",
-        ts: "2026-09-14T10:42:54Z",
-        kind: "Action",
-        detail: "gws.mail.filter.create — Auto-forward rule · external domain",
-        source: "Google Workspace",
+        "id": "ev-4407-2",
+        "ts": "2026-09-14T10:42:54Z",
+        "kind": "Action",
+        "detail": "Set up email auto-forwarding: Auto-forward to an outside address (gws.mail.filter.create)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-4407-3",
-        ts: "2026-09-14T10:54:18Z",
-        kind: "Action",
-        detail: "gws.mail.send_external — 4 unaffiliated domains · first ever",
-        source: "Google Workspace",
+        "id": "ev-4407-3",
+        "ts": "2026-09-14T10:54:18Z",
+        "kind": "Action",
+        "detail": "Emailed outside the company: 4 outside companies · first time ever (gws.mail.send_external)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-4407-4",
-        ts: "2026-09-14T11:08:56Z",
-        kind: "Action",
-        detail: "gws.contact.export — Directory export · 612 records",
-        source: "Google Workspace",
+        "id": "ev-4407-4",
+        "ts": "2026-09-14T11:08:56Z",
+        "kind": "Action",
+        "detail": "Exported the contact list: Directory export · 612 records (gws.contact.export)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-4407-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 14 resources (MAD 6)",
-        source: "tellTale",
-      },
+        "id": "ev-4407-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 14 files and systems (spread 6)",
+        "source": "tellTale"
+      }
     ],
-    sensorNote:
-      "Sensor not deployed on this identity; two detectors unavailable — presence divergence and composition drift.",
+    "sensorNote": "This account has no desktop app, so the two signals that need it (activity while the laptop is locked, change in type of work) aren't available."
   },
   {
-    subjectId: "subject_9663",
-    verdictLabel: "ELEVATED",
-    logitTotal: 0.2,
-    probability: 0.55,
-    risk: 55,
-    headline: "Privilege change, 3 outside change window",
-    contributions: [
+    "subjectId": "subject_9663",
+    "verdictLabel": "ELEVATED",
+    "logitTotal": 0.2,
+    "probability": 0.55,
+    "risk": 55,
+    "headline": "3 permission changes outside the approved window",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence:
-          "33 resources vs cohort median 60.5 (MAD 14) — robust Z = -1.32 — within baseline",
-        logit: 0,
+        "feature": "Volumetric deviation",
+        "evidence": "33 files and systems, against a typical 60.5 for the team (spread 14) — robust Z = -1.32 — normal for this team",
+        "logit": 0
       },
       {
-        feature: "Resource novelty",
-        evidence: "6 of 33 resources first seen in 180d",
-        logit: 0.54,
+        "feature": "Resource novelty",
+        "evidence": "6 of 33 files and systems used for the first time in 180 days",
+        "logit": 0.54
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "2 sessions from an ASN unseen in 180d",
-        logit: 0.42,
+        "feature": "Geo / ASN novelty",
+        "evidence": "2 logins from a network not seen in 180 days",
+        "logit": 0.42
       },
       {
-        feature: "Novel egress path",
-        evidence: "1 destination outside org accounts, no prior instance",
-        logit: 0.62,
+        "feature": "Novel egress path",
+        "evidence": "Sent data to 1 place outside the company, never used before",
+        "logit": 0.62
       },
       {
-        feature: "Graph topology change",
-        evidence: "2 new external-domain edges this window",
-        logit: 0.38,
+        "feature": "Graph topology change",
+        "evidence": "Contacted 2 outside companies for the first time",
+        "logit": 0.38
       },
       {
-        feature: "Privilege change",
-        evidence: "3 permission or policy edits outside the change window",
-        logit: 1.1,
+        "feature": "Privilege change",
+        "evidence": "3 permission or policy changes made outside the approved change window",
+        "logit": 1.1
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 4.60 against the order-2 backoff model",
-        logit: 0.14,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 5 sessions here follow this order of actions (session perplexity 4.60)",
+        "logit": 0.14
       },
       {
-        feature: "Context verification",
-        evidence:
-          "PARTIAL — scope match failed; the anomaly is real but partly explained",
-        logit: -1.1,
-      },
+        "feature": "Context verification",
+        "evidence": "PARTLY APPROVED — the record doesn't name the exact system touched",
+        "logit": -1.1
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "pass",
-        finding:
-          "Context record precedes the activity by more than the 30-minute minimum.",
+        "test": "precedence",
+        "result": "pass",
+        "finding": "The record was created more than 30 minutes before the activity."
       },
       {
-        test: "provenance",
-        result: "pass",
-        finding: "Assigned by an identity other than the subject.",
+        "test": "provenance",
+        "result": "pass",
+        "finding": "Assigned by someone other than this account."
       },
       {
-        test: "scope",
-        result: "warn",
-        finding: "Record does not name the specific resource touched.",
+        "test": "scope",
+        "result": "warn",
+        "finding": "The record doesn't name the exact system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "10 peers in Automation Platform, excluding this subject. Median 60.5 resources, MAD 14.",
-      subjectValue: 33,
-      stats: {
-        cohort: "Automation Platform",
-        n: 10,
-        median: 60.5,
-        mad: 14,
-        values: [24, 39, 45, 49, 57, 64, 67, 73, 76, 85],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "10 teammates in Automation Platform, not counting this account. Typical: 60.5 files and systems; spread: 14.",
+      "subjectValue": 33,
+      "stats": {
+        "cohort": "Automation Platform",
+        "n": 10,
+        "median": 60.5,
+        "mad": 14,
+        "values": [
+          24,
+          39,
+          45,
+          49,
+          57,
+          64,
+          67,
+          73,
+          76,
+          85
+        ]
       },
-      zScore: -1.32,
+      "zScore": -1.32
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Hyderabad",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Hyderabad",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "aws.iam.policy.put",
-          sublabel: "AdministratorAccess-scoped inline policy",
-          sensitivity: "critical",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "aws.iam.policy.put",
+          "sublabel": "Full admin access policy",
+          "sensitivity": "critical",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "aws.iam.role.attach",
-          sublabel: "svc-batch-runner · privilege widened",
-          sensitivity: "high",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "aws.iam.role.attach",
+          "sublabel": "svc-batch-runner · given more access",
+          "sensitivity": "high",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "aws.s3.get_object",
-          sublabel: "s3://finance-close-2026 · first ever",
-          sensitivity: "medium",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "aws.s3.get_object",
+          "sublabel": "s3://finance-close-2026 · first time ever",
+          "sensitivity": "medium",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.02,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.02
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.47,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.47
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.008,
-          anomalous: true,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.008,
+          "anomalous": true
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-9663-1",
-        ts: "2026-09-14T08:25:55Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Hyderabad",
-        source: "Okta",
+        "id": "ev-9663-1",
+        "ts": "2026-09-14T08:25:55Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Hyderabad (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-9663-2",
-        ts: "2026-09-14T08:37:19Z",
-        kind: "Action",
-        detail: "aws.iam.policy.put — AdministratorAccess-scoped inline policy",
-        source: "AWS CloudTrail",
+        "id": "ev-9663-2",
+        "ts": "2026-09-14T08:37:19Z",
+        "kind": "Action",
+        "detail": "Changed an access policy: Full admin access policy (aws.iam.policy.put)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-9663-3",
-        ts: "2026-09-14T08:43:01Z",
-        kind: "Action",
-        detail: "aws.iam.role.attach — svc-batch-runner · privilege widened",
-        source: "AWS CloudTrail",
+        "id": "ev-9663-3",
+        "ts": "2026-09-14T08:43:01Z",
+        "kind": "Action",
+        "detail": "Gave a role more access: svc-batch-runner · given more access (aws.iam.role.attach)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-9663-4",
-        ts: "2026-09-14T08:56:32Z",
-        kind: "Action",
-        detail: "aws.s3.get_object — s3://finance-close-2026 · first ever",
-        source: "AWS CloudTrail",
+        "id": "ev-9663-4",
+        "ts": "2026-09-14T08:56:32Z",
+        "kind": "Action",
+        "detail": "aws.s3.get_object: s3://finance-close-2026 · first time ever (aws.s3.get_object)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-9663-ctx",
-        ts: "2026-09-14T06:07:49Z",
-        kind: "Context record",
-        detail:
-          "TICKET-3663 — On-call rotation · scope does not name the resource touched",
-        source: "Jira",
+        "id": "ev-9663-ctx",
+        "ts": "2026-09-14T06:07:49Z",
+        "kind": "Context record",
+        "detail": "TICKET-3663 — On-call shift · doesn't name the system touched",
+        "source": "Jira"
       },
       {
-        id: "ev-9663-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 60.5 resources (MAD 14)",
-        source: "tellTale",
-      },
+        "id": "ev-9663-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 60.5 files and systems (spread 14)",
+        "source": "tellTale"
+      }
     ],
-    sensorNote:
-      "Sensor not deployed on this identity; two detectors unavailable — presence divergence and composition drift.",
+    "sensorNote": "This account has no desktop app, so the two signals that need it (activity while the laptop is locked, change in type of work) aren't available."
   },
   {
-    subjectId: "subject_2258",
-    verdictLabel: "ELEVATED",
-    logitTotal: -0.04,
-    probability: 0.49,
-    risk: 49,
-    headline: "Privilege change, 2 outside change window",
-    contributions: [
+    "subjectId": "subject_2258",
+    "verdictLabel": "ELEVATED",
+    "logitTotal": -0.04,
+    "probability": 0.49,
+    "risk": 49,
+    "headline": "2 permission changes outside the approved window",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence:
-          "12 resources vs cohort median 18 (MAD 8) — robust Z = -0.51 — within baseline",
-        logit: 0,
+        "feature": "Volumetric deviation",
+        "evidence": "12 files and systems, against a typical 18 for the team (spread 8) — robust Z = -0.51 — normal for this team",
+        "logit": 0
       },
       {
-        feature: "Resource novelty",
-        evidence: "3 of 12 resources first seen in 180d",
-        logit: 0.27,
+        "feature": "Resource novelty",
+        "evidence": "3 of 12 files and systems used for the first time in 180 days",
+        "logit": 0.27
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "1 session from an ASN unseen in 180d",
-        logit: 0.21,
+        "feature": "Geo / ASN novelty",
+        "evidence": "1 login from a network not seen in 180 days",
+        "logit": 0.21
       },
       {
-        feature: "Privilege change",
-        evidence: "2 permission or policy edits outside the change window",
-        logit: 0.9,
+        "feature": "Privilege change",
+        "evidence": "2 permission or policy changes made outside the approved change window",
+        "logit": 0.9
       },
       {
-        feature: "Device novelty",
-        evidence: "1 device fingerprints first seen in 180d",
-        logit: 0.3,
+        "feature": "Device novelty",
+        "evidence": "1 device not seen in 180 days",
+        "logit": 0.3
       },
       {
-        feature: "Presence divergence",
-        evidence:
-          "3 authenticated actions while the endpoint reported locked or idle",
-        logit: 0.33,
+        "feature": "Presence divergence",
+        "evidence": "3 actions while the person's laptop was locked or idle",
+        "logit": 0.33
       },
       {
-        feature: "Composition drift",
-        evidence: "JSD 0.18 vs anchor, net of cohort movement",
-        logit: 0.43,
+        "feature": "Composition drift",
+        "evidence": "The mix of work has shifted compared with 2–3 months ago (JSD 0.18)",
+        "logit": 0.43
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 6.73 against the order-2 backoff model",
-        logit: 0.52,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 7 sessions here follow this order of actions (session perplexity 6.73)",
+        "logit": 0.52
       },
       {
-        feature: "Context verification",
-        evidence:
-          "PARTIAL — scope match failed; the anomaly is real but partly explained",
-        logit: -1.1,
-      },
+        "feature": "Context verification",
+        "evidence": "PARTLY APPROVED — the record doesn't name the exact system touched",
+        "logit": -1.1
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "pass",
-        finding:
-          "Context record precedes the activity by more than the 30-minute minimum.",
+        "test": "precedence",
+        "result": "pass",
+        "finding": "The record was created more than 30 minutes before the activity."
       },
       {
-        test: "provenance",
-        result: "pass",
-        finding: "Assigned by an identity other than the subject.",
+        "test": "provenance",
+        "result": "pass",
+        "finding": "Assigned by someone other than this account."
       },
       {
-        test: "scope",
-        result: "warn",
-        finding: "Record does not name the specific resource touched.",
+        "test": "scope",
+        "result": "warn",
+        "finding": "The record doesn't name the exact system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "13 peers in Finance Operations, excluding this subject. Median 18 resources, MAD 8.",
-      subjectValue: 12,
-      stats: {
-        cohort: "Finance Operations",
-        n: 13,
-        median: 18,
-        mad: 8,
-        values: [6, 8, 12, 12, 14, 16, 18, 23, 26, 26, 28, 44, 48],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "13 teammates in Finance Operations, not counting this account. Typical: 18 files and systems; spread: 8.",
+      "subjectValue": 12,
+      "stats": {
+        "cohort": "Finance Operations",
+        "n": 13,
+        "median": 18,
+        "mad": 8,
+        "values": [
+          6,
+          8,
+          12,
+          12,
+          14,
+          16,
+          18,
+          23,
+          26,
+          26,
+          28,
+          44,
+          48
+        ]
       },
-      zScore: -0.51,
+      "zScore": -0.51
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Hyderabad",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Hyderabad",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "aws.iam.policy.put",
-          sublabel: "AdministratorAccess-scoped inline policy",
-          sensitivity: "critical",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "aws.iam.policy.put",
+          "sublabel": "Full admin access policy",
+          "sensitivity": "critical",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "aws.iam.role.attach",
-          sublabel: "svc-batch-runner · privilege widened",
-          sensitivity: "high",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "aws.iam.role.attach",
+          "sublabel": "svc-batch-runner · given more access",
+          "sensitivity": "high",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "aws.s3.get_object",
-          sublabel: "s3://finance-close-2026 · first ever",
-          sensitivity: "medium",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "aws.s3.get_object",
+          "sublabel": "s3://finance-close-2026 · first time ever",
+          "sensitivity": "medium",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.02,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.02
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.47,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.47
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.008,
-          anomalous: true,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.008,
+          "anomalous": true
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-2258-1",
-        ts: "2026-09-14T08:25:55Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Hyderabad",
-        source: "Okta",
+        "id": "ev-2258-1",
+        "ts": "2026-09-14T08:25:55Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Hyderabad (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-2258-2",
-        ts: "2026-09-14T08:37:19Z",
-        kind: "Action",
-        detail: "aws.iam.policy.put — AdministratorAccess-scoped inline policy",
-        source: "AWS CloudTrail",
+        "id": "ev-2258-2",
+        "ts": "2026-09-14T08:37:19Z",
+        "kind": "Action",
+        "detail": "Changed an access policy: Full admin access policy (aws.iam.policy.put)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-2258-3",
-        ts: "2026-09-14T08:43:01Z",
-        kind: "Action",
-        detail: "aws.iam.role.attach — svc-batch-runner · privilege widened",
-        source: "AWS CloudTrail",
+        "id": "ev-2258-3",
+        "ts": "2026-09-14T08:43:01Z",
+        "kind": "Action",
+        "detail": "Gave a role more access: svc-batch-runner · given more access (aws.iam.role.attach)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-2258-4",
-        ts: "2026-09-14T08:56:32Z",
-        kind: "Action",
-        detail: "aws.s3.get_object — s3://finance-close-2026 · first ever",
-        source: "AWS CloudTrail",
+        "id": "ev-2258-4",
+        "ts": "2026-09-14T08:56:32Z",
+        "kind": "Action",
+        "detail": "aws.s3.get_object: s3://finance-close-2026 · first time ever (aws.s3.get_object)",
+        "source": "AWS CloudTrail"
       },
       {
-        id: "ev-2258-ctx",
-        ts: "2026-09-14T06:07:49Z",
-        kind: "Context record",
-        detail:
-          "TICKET-3458 — On-call rotation · scope does not name the resource touched",
-        source: "Jira",
+        "id": "ev-2258-ctx",
+        "ts": "2026-09-14T06:07:49Z",
+        "kind": "Context record",
+        "detail": "TICKET-3458 — On-call shift · doesn't name the system touched",
+        "source": "Jira"
       },
       {
-        id: "ev-2258-pr",
-        ts: "2026-09-14T08:25:55Z",
-        kind: "Presence",
-        detail: "Endpoint reported locked across 3 authenticated actions",
-        source: "Sensor",
+        "id": "ev-2258-pr",
+        "ts": "2026-09-14T08:25:55Z",
+        "kind": "Presence",
+        "detail": "Laptop was locked during 3 of this account's actions",
+        "source": "Sensor"
       },
       {
-        id: "ev-2258-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 18 resources (MAD 8)",
-        source: "tellTale",
-      },
-    ],
+        "id": "ev-2258-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 18 files and systems (spread 8)",
+        "source": "tellTale"
+      }
+    ]
   },
   {
-    subjectId: "subject_7015",
-    verdictLabel: "LOW",
-    logitTotal: -0.24,
-    probability: 0.44,
-    risk: 44,
-    headline: "Composition drift, JSD 0.28",
-    contributions: [
+    "subjectId": "subject_7015",
+    "verdictLabel": "LOW",
+    "logitTotal": -0.24,
+    "probability": 0.44,
+    "risk": 44,
+    "headline": "Big change in type of work",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence:
-          "26 resources vs cohort median 51 (MAD 9) — robust Z = -1.87 — within baseline",
-        logit: 0,
+        "feature": "Volumetric deviation",
+        "evidence": "26 files and systems, against a typical 51 for the team (spread 9) — robust Z = -1.87 — normal for this team",
+        "logit": 0
       },
       {
-        feature: "Resource novelty",
-        evidence: "2 of 26 resources first seen in 180d",
-        logit: 0.18,
+        "feature": "Resource novelty",
+        "evidence": "2 of 26 files and systems used for the first time in 180 days",
+        "logit": 0.18
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "1 session from an ASN unseen in 180d",
-        logit: 0.21,
+        "feature": "Geo / ASN novelty",
+        "evidence": "1 login from a network not seen in 180 days",
+        "logit": 0.21
       },
       {
-        feature: "Presence divergence",
-        evidence:
-          "2 authenticated actions while the endpoint reported locked or idle",
-        logit: 0.22,
+        "feature": "Presence divergence",
+        "evidence": "2 actions while the person's laptop was locked or idle",
+        "logit": 0.22
       },
       {
-        feature: "Composition drift",
-        evidence: "JSD 0.28 vs anchor, net of cohort movement",
-        logit: 0.67,
+        "feature": "Composition drift",
+        "evidence": "The mix of work has shifted compared with 2–3 months ago (JSD 0.28)",
+        "logit": 0.67
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 5.85 against the order-2 backoff model",
-        logit: 0.38,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 6 sessions here follow this order of actions (session perplexity 5.85)",
+        "logit": 0.38
       },
       {
-        feature: "Context verification",
-        evidence: "ABSENT — no authorising record found in any context source",
-        logit: 0,
-      },
+        "feature": "Context verification",
+        "evidence": "NO APPROVAL — no ticket, on-call shift or HR record covers this",
+        "logit": 0
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "fail",
-        finding: "No context record precedes this activity.",
+        "test": "precedence",
+        "result": "fail",
+        "finding": "No record exists from before this activity."
       },
       {
-        test: "provenance",
-        result: "fail",
-        finding: "No record to attribute.",
+        "test": "provenance",
+        "result": "fail",
+        "finding": "There is no record, so there is no author to check."
       },
       {
-        test: "scope",
-        result: "fail",
-        finding: "No record to resolve against.",
+        "test": "scope",
+        "result": "fail",
+        "finding": "No record mentions the system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "11 peers in Data Platform, excluding this subject. Median 51 resources, MAD 9.",
-      subjectValue: 26,
-      stats: {
-        cohort: "Data Platform",
-        n: 11,
-        median: 51,
-        mad: 9,
-        values: [9, 22, 27, 39, 50, 51, 54, 54, 56, 60, 147],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "11 teammates in Data Platform, not counting this account. Typical: 51 files and systems; spread: 9.",
+      "subjectValue": 26,
+      "stats": {
+        "cohort": "Data Platform",
+        "n": 11,
+        "median": 51,
+        "mad": 9,
+        "values": [
+          9,
+          22,
+          27,
+          39,
+          50,
+          51,
+          54,
+          54,
+          56,
+          60,
+          147
+        ]
       },
-      zScore: -1.87,
+      "zScore": -1.87
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Bengaluru",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Bengaluru",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "gdrive.folder.list",
-          sublabel: "Shared — Data Platform",
-          sensitivity: "low",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "gdrive.folder.list",
+          "sublabel": "Shared — Data Platform",
+          "sensitivity": "low",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "gdrive.file.download",
-          sublabel: "214 files · 40 minutes",
-          sensitivity: "high",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "gdrive.file.download",
+          "sublabel": "214 files · 40 minutes",
+          "sensitivity": "high",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "dropbox.folder.sync",
-          sublabel: "Personal account · first ever",
-          sensitivity: "critical",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "dropbox.folder.sync",
+          "sublabel": "Personal account · first time ever",
+          "sensitivity": "critical",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.51,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.51
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.28,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.28
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.0012,
-          anomalous: true,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.0012,
+          "anomalous": true
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-7015-1",
-        ts: "2026-09-14T10:40:40Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Bengaluru",
-        source: "Okta",
+        "id": "ev-7015-1",
+        "ts": "2026-09-14T10:40:40Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Bengaluru (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-7015-2",
-        ts: "2026-09-14T10:58:46Z",
-        kind: "Action",
-        detail: "gdrive.folder.list — Shared — Data Platform",
-        source: "Google Workspace",
+        "id": "ev-7015-2",
+        "ts": "2026-09-14T10:58:46Z",
+        "kind": "Action",
+        "detail": "Browsed a shared folder: Shared — Data Platform (gdrive.folder.list)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-7015-3",
-        ts: "2026-09-14T11:16:52Z",
-        kind: "Action",
-        detail: "gdrive.file.download — 214 files · 40 minutes",
-        source: "Google Workspace",
+        "id": "ev-7015-3",
+        "ts": "2026-09-14T11:16:52Z",
+        "kind": "Action",
+        "detail": "Downloaded files from Google Drive: 214 files · 40 minutes (gdrive.file.download)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-7015-4",
-        ts: "2026-09-14T11:38:26Z",
-        kind: "Action",
-        detail: "dropbox.folder.sync — Personal account · first ever",
-        source: "Jira",
+        "id": "ev-7015-4",
+        "ts": "2026-09-14T11:38:26Z",
+        "kind": "Action",
+        "detail": "Synced a folder to Dropbox: Personal account · first time ever (dropbox.folder.sync)",
+        "source": "Jira"
       },
       {
-        id: "ev-7015-pr",
-        ts: "2026-09-14T10:40:40Z",
-        kind: "Presence",
-        detail: "Endpoint reported locked across 2 authenticated actions",
-        source: "Sensor",
+        "id": "ev-7015-pr",
+        "ts": "2026-09-14T10:40:40Z",
+        "kind": "Presence",
+        "detail": "Laptop was locked during 2 of this account's actions",
+        "source": "Sensor"
       },
       {
-        id: "ev-7015-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 51 resources (MAD 9)",
-        source: "tellTale",
-      },
-    ],
+        "id": "ev-7015-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 51 files and systems (spread 9)",
+        "source": "tellTale"
+      }
+    ]
   },
   {
-    subjectId: "subject_5871",
-    verdictLabel: "LOW",
-    logitTotal: -0.49,
-    probability: 0.38,
-    risk: 38,
-    headline: "Volumetric deviation, Z = +3.08",
-    contributions: [
+    "subjectId": "subject_5871",
+    "verdictLabel": "LOW",
+    "logitTotal": -0.49,
+    "probability": 0.38,
+    "risk": 38,
+    "headline": "Far more activity than teammates",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence: "48 resources vs cohort median 16 (MAD 7) — robust Z = +3.08",
-        logit: 0.88,
+        "feature": "Volumetric deviation",
+        "evidence": "48 files and systems, against a typical 16 for the team (spread 7) — robust Z = +3.08",
+        "logit": 0.88
       },
       {
-        feature: "Resource novelty",
-        evidence: "3 of 48 resources first seen in 180d",
-        logit: 0.27,
+        "feature": "Resource novelty",
+        "evidence": "3 of 48 files and systems used for the first time in 180 days",
+        "logit": 0.27
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "1 session from an ASN unseen in 180d",
-        logit: 0.21,
+        "feature": "Geo / ASN novelty",
+        "evidence": "1 login from a network not seen in 180 days",
+        "logit": 0.21
       },
       {
-        feature: "Presence divergence",
-        evidence:
-          "3 authenticated actions while the endpoint reported locked or idle",
-        logit: 0.33,
+        "feature": "Presence divergence",
+        "evidence": "3 actions while the person's laptop was locked or idle",
+        "logit": 0.33
       },
       {
-        feature: "Composition drift",
-        evidence: "JSD 0.12 vs anchor, net of cohort movement",
-        logit: 0.29,
+        "feature": "Composition drift",
+        "evidence": "The mix of work has shifted compared with 2–3 months ago (JSD 0.12)",
+        "logit": 0.29
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 6.80 against the order-2 backoff model",
-        logit: 0.53,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 7 sessions here follow this order of actions (session perplexity 6.80)",
+        "logit": 0.53
       },
       {
-        feature: "Context verification",
-        evidence:
-          "PARTIAL — scope match failed; the anomaly is real but partly explained",
-        logit: -1.1,
-      },
+        "feature": "Context verification",
+        "evidence": "PARTLY APPROVED — the record doesn't name the exact system touched",
+        "logit": -1.1
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "pass",
-        finding:
-          "Context record precedes the activity by more than the 30-minute minimum.",
+        "test": "precedence",
+        "result": "pass",
+        "finding": "The record was created more than 30 minutes before the activity."
       },
       {
-        test: "provenance",
-        result: "pass",
-        finding: "Assigned by an identity other than the subject.",
+        "test": "provenance",
+        "result": "pass",
+        "finding": "Assigned by someone other than this account."
       },
       {
-        test: "scope",
-        result: "warn",
-        finding: "Record does not name the specific resource touched.",
+        "test": "scope",
+        "result": "warn",
+        "finding": "The record doesn't name the exact system that was touched."
       },
       {
-        test: "proportionality",
-        result: "pass",
-        finding: "Volume is plausible for the scope of work described.",
-      },
+        "test": "proportionality",
+        "result": "pass",
+        "finding": "The amount of activity fits the task."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "13 peers in Finance Operations, excluding this subject. Median 16 resources, MAD 7.",
-      subjectValue: 48,
-      stats: {
-        cohort: "Finance Operations",
-        n: 13,
-        median: 16,
-        mad: 7,
-        values: [6, 8, 12, 12, 12, 14, 16, 18, 23, 26, 26, 28, 44],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "13 teammates in Finance Operations, not counting this account. Typical: 16 files and systems; spread: 7.",
+      "subjectValue": 48,
+      "stats": {
+        "cohort": "Finance Operations",
+        "n": 13,
+        "median": 16,
+        "mad": 7,
+        "values": [
+          6,
+          8,
+          12,
+          12,
+          12,
+          14,
+          16,
+          18,
+          23,
+          26,
+          26,
+          28,
+          44
+        ]
       },
-      zScore: 3.08,
+      "zScore": 3.08
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Mumbai",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Mumbai",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "netsuite.search.saved_run",
-          sublabel: "Open invoices · saved search",
-          sensitivity: "low",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "netsuite.search.saved_run",
+          "sublabel": "Open invoices · saved search",
+          "sensitivity": "low",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "netsuite.record.fetch",
-          sublabel: "Sequential record reads",
-          sensitivity: "medium",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "netsuite.record.fetch",
+          "sublabel": "Opened records one after another",
+          "sensitivity": "medium",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "netsuite.export.csv",
-          sublabel: "Close pack · 1 file",
-          sensitivity: "high",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "netsuite.export.csv",
+          "sublabel": "Close pack · 1 file",
+          "sensitivity": "high",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.47,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.47
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.62,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.62
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.09,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.09
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-5871-1",
-        ts: "2026-09-14T09:21:27Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Mumbai",
-        source: "Okta",
+        "id": "ev-5871-1",
+        "ts": "2026-09-14T09:21:27Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Mumbai (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-5871-2",
-        ts: "2026-09-14T09:42:54Z",
-        kind: "Action",
-        detail: "netsuite.search.saved_run — Open invoices · saved search",
-        source: "Jira",
+        "id": "ev-5871-2",
+        "ts": "2026-09-14T09:42:54Z",
+        "kind": "Action",
+        "detail": "Ran a saved finance search: Open invoices · saved search (netsuite.search.saved_run)",
+        "source": "Jira"
       },
       {
-        id: "ev-5871-3",
-        ts: "2026-09-14T10:00:00Z",
-        kind: "Action",
-        detail: "netsuite.record.fetch — Sequential record reads",
-        source: "Jira",
+        "id": "ev-5871-3",
+        "ts": "2026-09-14T10:00:00Z",
+        "kind": "Action",
+        "detail": "Opened finance records: Opened records one after another (netsuite.record.fetch)",
+        "source": "Jira"
       },
       {
-        id: "ev-5871-4",
-        ts: "2026-09-14T10:15:45Z",
-        kind: "Action",
-        detail: "netsuite.export.csv — Close pack · 1 file",
-        source: "Jira",
+        "id": "ev-5871-4",
+        "ts": "2026-09-14T10:15:45Z",
+        "kind": "Action",
+        "detail": "Exported finance data to a file: Close pack · 1 file (netsuite.export.csv)",
+        "source": "Jira"
       },
       {
-        id: "ev-5871-ctx",
-        ts: "2026-09-14T07:12:24Z",
-        kind: "Context record",
-        detail:
-          "TICKET-3471 — On-call rotation · scope does not name the resource touched",
-        source: "Jira",
+        "id": "ev-5871-ctx",
+        "ts": "2026-09-14T07:12:24Z",
+        "kind": "Context record",
+        "detail": "TICKET-3471 — On-call shift · doesn't name the system touched",
+        "source": "Jira"
       },
       {
-        id: "ev-5871-pr",
-        ts: "2026-09-14T09:21:27Z",
-        kind: "Presence",
-        detail: "Endpoint reported locked across 3 authenticated actions",
-        source: "Sensor",
+        "id": "ev-5871-pr",
+        "ts": "2026-09-14T09:21:27Z",
+        "kind": "Presence",
+        "detail": "Laptop was locked during 3 of this account's actions",
+        "source": "Sensor"
       },
       {
-        id: "ev-5871-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 16 resources (MAD 7)",
-        source: "tellTale",
-      },
-    ],
+        "id": "ev-5871-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 16 files and systems (spread 7)",
+        "source": "tellTale"
+      }
+    ]
   },
   {
-    subjectId: "subject_3340",
-    verdictLabel: "LOW",
-    logitTotal: -0.8,
-    probability: 0.31,
-    risk: 31,
-    headline: "Volumetric deviation, Z = +9.22",
-    contributions: [
+    "subjectId": "subject_3340",
+    "verdictLabel": "LOW",
+    "logitTotal": -0.8,
+    "probability": 0.31,
+    "risk": 31,
+    "headline": "Far more activity than teammates",
+    "contributions": [
       {
-        feature: "Base rate (intercept)",
-        evidence:
-          "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
-        logit: -1.9,
+        "feature": "Base rate (intercept)",
+        "evidence": "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
+        "logit": -1.9
       },
       {
-        feature: "Volumetric deviation",
-        evidence: "96 resources vs cohort median 14 (MAD 6) — robust Z = +9.22",
-        logit: 1.3,
+        "feature": "Volumetric deviation",
+        "evidence": "96 files and systems, against a typical 14 for the team (spread 6) — robust Z = +9.22",
+        "logit": 1.3
       },
       {
-        feature: "Resource novelty",
-        evidence: "8 of 96 resources first seen in 180d",
-        logit: 0.72,
+        "feature": "Resource novelty",
+        "evidence": "8 of 96 files and systems used for the first time in 180 days",
+        "logit": 0.72
       },
       {
-        feature: "Geo / ASN novelty",
-        evidence: "2 sessions from an ASN unseen in 180d",
-        logit: 0.42,
+        "feature": "Geo / ASN novelty",
+        "evidence": "2 logins from a network not seen in 180 days",
+        "logit": 0.42
       },
       {
-        feature: "Graph topology change",
-        evidence: "1 new external-domain edges this window",
-        logit: 0.19,
+        "feature": "Graph topology change",
+        "evidence": "Contacted 1 outside companies for the first time",
+        "logit": 0.19
       },
       {
-        feature: "Device novelty",
-        evidence: "2 device fingerprints first seen in 180d",
-        logit: 0.6,
+        "feature": "Device novelty",
+        "evidence": "2 devices not seen in 180 days",
+        "logit": 0.6
       },
       {
-        feature: "Trajectory surprisal",
-        evidence: "Session perplexity 6.40 against the order-2 backoff model",
-        logit: 0.47,
+        "feature": "Trajectory surprisal",
+        "evidence": "About 1 in 6 sessions here follow this order of actions (session perplexity 6.40)",
+        "logit": 0.47
       },
       {
-        feature: "Context verification",
-        evidence:
-          "AUTHORISED — precedence, provenance, scope and proportionality all pass",
-        logit: -2.6,
-      },
+        "feature": "Context verification",
+        "evidence": "APPROVED — the record passed all four checks",
+        "logit": -2.6
+      }
     ],
-    checks: [
+    "checks": [
       {
-        test: "precedence",
-        result: "pass",
-        finding:
-          "Context record precedes the activity by more than the 30-minute minimum.",
+        "test": "precedence",
+        "result": "pass",
+        "finding": "The record was created more than 30 minutes before the activity."
       },
       {
-        test: "provenance",
-        result: "pass",
-        finding: "Assigned by an identity other than the subject.",
+        "test": "provenance",
+        "result": "pass",
+        "finding": "Assigned by someone other than this account."
       },
       {
-        test: "scope",
-        result: "pass",
-        finding: "Record names the resource touched.",
+        "test": "scope",
+        "result": "pass",
+        "finding": "The record names the system that was touched."
       },
       {
-        test: "proportionality",
-        result: "warn",
-        finding:
-          "Volume exceeds the 95th percentile for this work class (96 vs cohort median 14).",
-      },
+        "test": "proportionality",
+        "result": "warn",
+        "finding": "96 files and systems is more than 95% of similar tasks (typical for the team: 14)."
+      }
     ],
-    comparison: {
-      metric: "Distinct resources touched",
-      caption:
-        "11 peers in Customer Support, excluding this subject. Median 14 resources, MAD 6.",
-      subjectValue: 96,
-      stats: {
-        cohort: "Customer Support",
-        n: 11,
-        median: 14,
-        mad: 6,
-        values: [3, 6, 8, 10, 11, 14, 14, 19, 20, 21, 22],
+    "comparison": {
+      "metric": "Distinct resources touched",
+      "caption": "11 teammates in Customer Support, not counting this account. Typical: 14 files and systems; spread: 6.",
+      "subjectValue": 96,
+      "stats": {
+        "cohort": "Customer Support",
+        "n": 11,
+        "median": 14,
+        "mad": 6,
+        "values": [
+          3,
+          6,
+          8,
+          10,
+          11,
+          14,
+          14,
+          19,
+          20,
+          21,
+          22
+        ]
       },
-      zScore: 9.22,
+      "zScore": 9.22
     },
-    attackPath: {
-      nodes: [
+    "attackPath": {
+      "nodes": [
         {
-          id: "n0",
-          label: "okta.session.start",
-          sublabel: "Corporate ASN · Bengaluru",
-          sensitivity: "low",
-          x: 0,
-          y: 60,
+          "id": "n0",
+          "label": "okta.session.start",
+          "sublabel": "Corporate ASN · Bengaluru",
+          "sensitivity": "low",
+          "x": 0,
+          "y": 60
         },
         {
-          id: "n1",
-          label: "zendesk.ticket.bulk_export",
-          sublabel: "96 tickets · CSV, within ticket scope",
-          sensitivity: "high",
-          x: 200,
-          y: 60,
+          "id": "n1",
+          "label": "zendesk.ticket.bulk_export",
+          "sublabel": "96 tickets · CSV, within ticket scope",
+          "sensitivity": "high",
+          "x": 200,
+          "y": 60
         },
         {
-          id: "n2",
-          label: "gdrive.file.download",
-          sublabel: "Support — refund audit pack",
-          sensitivity: "medium",
-          x: 400,
-          y: 60,
+          "id": "n2",
+          "label": "gdrive.file.download",
+          "sublabel": "Support — refund audit pack",
+          "sensitivity": "medium",
+          "x": 400,
+          "y": 60
         },
         {
-          id: "n3",
-          label: "zendesk.macro.apply",
-          sublabel: "Bulk macro · refund-followup",
-          sensitivity: "low",
-          x: 600,
-          y: 60,
-        },
+          "id": "n3",
+          "label": "zendesk.macro.apply",
+          "sublabel": "Bulk macro · refund-followup",
+          "sensitivity": "low",
+          "x": 600,
+          "y": 60
+        }
       ],
-      edges: [
+      "edges": [
         {
-          from: "n0",
-          to: "n1",
-          probability: 0.16,
+          "from": "n0",
+          "to": "n1",
+          "probability": 0.16
         },
         {
-          from: "n1",
-          to: "n2",
-          probability: 0.31,
+          "from": "n1",
+          "to": "n2",
+          "probability": 0.31
         },
         {
-          from: "n2",
-          to: "n3",
-          probability: 0.44,
-        },
-      ],
+          "from": "n2",
+          "to": "n3",
+          "probability": 0.44
+        }
+      ]
     },
-    evidence: [
+    "evidence": [
       {
-        id: "ev-3340-1",
-        ts: "2026-09-14T09:09:03Z",
-        kind: "Identity",
-        detail: "okta.session.start — Corporate ASN · Bengaluru",
-        source: "Okta",
+        "id": "ev-3340-1",
+        "ts": "2026-09-14T09:09:03Z",
+        "kind": "Identity",
+        "detail": "Logged in: Corporate ASN · Bengaluru (okta.session.start)",
+        "source": "Okta"
       },
       {
-        id: "ev-3340-2",
-        ts: "2026-09-14T09:36:12Z",
-        kind: "Action",
-        detail:
-          "zendesk.ticket.bulk_export — 96 tickets · CSV, within ticket scope",
-        source: "Jira",
+        "id": "ev-3340-2",
+        "ts": "2026-09-14T09:36:12Z",
+        "kind": "Action",
+        "detail": "Exported support tickets: 96 tickets · CSV, within ticket scope (zendesk.ticket.bulk_export)",
+        "source": "Jira"
       },
       {
-        id: "ev-3340-3",
-        ts: "2026-09-14T09:53:11Z",
-        kind: "Action",
-        detail: "gdrive.file.download — Support — refund audit pack",
-        source: "Google Workspace",
+        "id": "ev-3340-3",
+        "ts": "2026-09-14T09:53:11Z",
+        "kind": "Action",
+        "detail": "Downloaded files from Google Drive: Support — refund audit pack (gdrive.file.download)",
+        "source": "Google Workspace"
       },
       {
-        id: "ev-3340-4",
-        ts: "2026-09-14T10:10:10Z",
-        kind: "Action",
-        detail: "zendesk.macro.apply — Bulk macro · refund-followup",
-        source: "Jira",
+        "id": "ev-3340-4",
+        "ts": "2026-09-14T10:10:10Z",
+        "kind": "Action",
+        "detail": "Updated support tickets in bulk: Bulk macro · refund-followup (zendesk.macro.apply)",
+        "source": "Jira"
       },
       {
-        id: "ev-3340-ctx",
-        ts: "2026-09-14T00:01:07Z",
-        kind: "Context record",
-        detail:
-          "TICKET-3640 — Scope-matched ticket · assigned by another identity",
-        source: "Jira",
+        "id": "ev-3340-ctx",
+        "ts": "2026-09-14T00:01:07Z",
+        "kind": "Context record",
+        "detail": "TICKET-3640 — Matching ticket · assigned by someone else",
+        "source": "Jira"
       },
       {
-        id: "ev-3340-bl",
-        ts: "2026-08-03T00:00:00Z",
-        kind: "Baseline",
-        detail:
-          "Anchor window 60–90d frozen; cohort median 14 resources (MAD 6)",
-        source: "tellTale",
-      },
+        "id": "ev-3340-bl",
+        "ts": "2026-08-03T00:00:00Z",
+        "kind": "Baseline",
+        "detail": "Comparison point from 2–3 months ago: typical for the team was 14 files and systems (spread 6)",
+        "source": "tellTale"
+      }
     ],
-    sensorNote:
-      "Sensor not deployed on this identity; two detectors unavailable — presence divergence and composition drift.",
-  },
+    "sensorNote": "This account has no desktop app, so the two signals that need it (activity while the laptop is locked, change in type of work) aren't available."
+  }
 ];

@@ -11,3 +11,6 @@ telltale/tsconfig.tsbuildinfo
 .idea/
 .DS_Store
 Thumbs.db
+
+# Netlify
+.netlify/

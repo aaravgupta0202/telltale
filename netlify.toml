@@ -1,0 +1,37 @@
+# Netlify: static export of the tellTale demo console.
+#
+# The app lives in telltale/. `npm run build` verifies the fixtures, runs
+# `next build` (output: "export"), and checks the rendered pages; the static
+# site lands in telltale/out. There are no functions, no API routes and no
+# runtime network calls, so nothing else needs configuring.
+
+[build]
+  base = "telltale"
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  # The fixture verifier imports .ts files directly, which needs Node's
+  # built-in type stripping (Node 22.18+). Pinned to the version it was
+  # built and tested with.
+  NODE_VERSION = "24"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Hashed build assets never change under the same name.
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/brand-icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"

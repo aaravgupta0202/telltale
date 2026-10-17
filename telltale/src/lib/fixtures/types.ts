@@ -16,6 +16,8 @@ export interface Subject {
   id: string;
   /** '#4912' — the only form ever rendered in the risk module */
   pseudonym: string;
+  /** Non-human identities only: the agent's configured name, e.g. 'release-bot'. */
+  label?: string;
   cohort: string;
   cohortSize: number;
   identityClass: IdentityClass;

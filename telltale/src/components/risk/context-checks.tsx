@@ -1,6 +1,7 @@
 import { AlertTriangle, Check, X, ShieldCheck } from "lucide-react";
 import { cn } from "cn";
 import type { CheckResult, ContextCheck, ContextVerdict } from "@/lib/fixtures";
+import { CHECK_PLAIN } from "@/lib/plain";
 
 /**
  * PRD §5.3D: the four tests, in the order the engine applies them. Each row
@@ -8,48 +9,32 @@ import type { CheckResult, ContextCheck, ContextVerdict } from "@/lib/fixtures";
  * name its evidence is an assertion, and this screen exists to avoid making
  * assertions.
  */
-const TESTS: { key: ContextCheck["test"]; label: string; question: string }[] =
-  [
-    {
-      key: "precedence",
-      label: "Precedence",
-      question: "Did the record exist before the activity?",
-    },
-    {
-      key: "provenance",
-      label: "Provenance",
-      question: "Was it created by someone other than the subject?",
-    },
-    {
-      key: "scope",
-      label: "Scope match",
-      question: "Does its scope resolve to the resources touched?",
-    },
-    {
-      key: "proportionality",
-      label: "Proportionality",
-      question: "Is the volume plausible for that scope?",
-    },
-  ];
+const TESTS: { key: ContextCheck["test"]; label: string; question: string; technical: string }[] =
+  (["precedence", "provenance", "scope", "proportionality"] as const).map((key) => ({
+    key,
+    label: CHECK_PLAIN[key].name,
+    question: CHECK_PLAIN[key].question,
+    technical: CHECK_PLAIN[key].technical,
+  }));
 
 const RESULT: Record<
   CheckResult,
   { label: string; Icon: typeof Check; className: string; dot: string }
 > = {
   pass: {
-    label: "PASS",
+    label: "PASSED",
     Icon: Check,
     className: "text-emerald-700",
     dot: "bg-emerald-600",
   },
   warn: {
-    label: "WARN",
+    label: "DOUBTFUL",
     Icon: AlertTriangle,
     className: "text-amber-700",
     dot: "bg-amber-600",
   },
   fail: {
-    label: "FAIL",
+    label: "FAILED",
     Icon: X,
     className: "text-red-700",
     dot: "bg-red-600",
@@ -58,13 +43,13 @@ const RESULT: Record<
 
 const VERDICT_LINE: Record<ContextVerdict, string> = {
   authorised:
-    "All four tests pass. The activity is authorised work and the anomaly is suppressed, with the record retained.",
+    "All four checks passed. This was approved work, so the alert was closed and the record that explains it was saved.",
   partial:
-    "Some tests pass and some do not. The context term is applied at partial weight rather than in full.",
+    "The record is genuine but only explains part of the activity, so it lowers the score a little rather than fully.",
   absent:
-    "No context record was found in any source, so there is nothing to test. Absence is not evidence of intent: it removes the discount, it does not add a penalty.",
+    "No ticket, on-call shift or HR record covers this activity. That doesn't prove bad intent, so it adds nothing to the score, but nothing lowers it either.",
   suspicious:
-    "A record exists and fails provenance. The attempt to manufacture authorisation is itself the signal, and it raises the score rather than lowering it.",
+    "A record exists, but this account made it for itself. Faking approval is a warning sign in itself, so it raises the score instead of lowering it.",
 };
 
 export function ContextChecks({
@@ -112,6 +97,7 @@ export function ContextChecks({
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-900">{t.label}</p>
+                  <p className="text-[10px] text-slate-400">{t.technical}</p>
                   <p className={cn("label text-[10px] font-bold", r.className)}>
                     {r.label}
                   </p>

@@ -12,41 +12,41 @@ export default function CapturesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Workforce module"
-        title="Screen captures"
-        description="Scheduled captures at a fixed cadence, plus captures requested by behavioural triggers. Most frames below are generated; a few applications use a generic reference image instead (no frame is a capture of anyone's actual screen)."
+        eyebrow="HR part"
+        title="Screenshots"
+        description="Optional screenshots: regular ones every 5 minutes during work hours, plus ones triggered by an HR rule. In this demo the pictures are generated or generic samples, never anyone's real screen."
       />
 
       <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <Stat
           icon={Camera}
-          label="Captures today"
+          label="Screenshots today"
           value={String(CAPTURES.length)}
-          sub="across enrolled endpoints"
+          sub="across laptops with the desktop app"
         />
         <Stat
           icon={Clock}
-          label="Scheduled"
+          label="Regular"
           value={String(CAPTURES.length - triggered)}
-          sub="fixed 5-minute cadence"
+          sub="every 5 minutes"
         />
         <Stat
           icon={Radio}
           label="Triggered"
           value={String(triggered)}
-          sub="requested by a behavioural signal"
+          sub="taken because an HR rule fired"
         />
         <Stat
           icon={ShieldCheck}
-          label="Employee screens shown"
+          label="Real screens shown"
           value="0"
-          sub="generated, or a generic reference image (never a real capture)"
+          sub="all pictures are generated or generic samples"
         />
       </div>
 
       <Panel
         bodyClassName="p-0"
-        footnote="Under the EU standard profile, scheduled capture is off and only triggered capture remains (dormant until behaviour justifies it). The jurisdiction chip in the sidebar names the active profile."
+        footnote="Under EU rules, regular screenshots are switched off and only alert-triggered ones remain. The country rules in use are shown at the bottom of the sidebar."
       >
         <CaptureGallery />
       </Panel>

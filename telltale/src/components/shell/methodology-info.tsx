@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Info } from "lucide-react";
 import { cn } from "cn";
+import { useTourActive } from "./walkthrough";
 import {
   Dialog,
   DialogContent,
@@ -38,8 +39,10 @@ export function MethodologyInfo() {
   const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
   const content = contentFor(pathname);
+  // The walkthrough bar takes the bottom of the screen while it runs.
+  const touring = useTourActive();
 
-  if (!content) return null;
+  if (!content || touring) return null;
 
   return (
     <Dialog
@@ -59,7 +62,7 @@ export function MethodologyInfo() {
         render={
           <button
             type="button"
-            title="How this page works"
+            title="How to read this page"
             className={cn(
               // On mobile the demo launcher becomes a full-width bar along
               // the very bottom (see demo-launcher.tsx), so this sits one
@@ -72,7 +75,7 @@ export function MethodologyInfo() {
         }
       >
         <Info className="size-4.5" />
-        <span className="sr-only">How this page works</span>
+        <span className="sr-only">How to read this page</span>
       </DialogTrigger>
 
       <DialogContent
@@ -94,7 +97,7 @@ export function MethodologyInfo() {
 
         <div className="border-t border-line px-6 py-3 text-xs text-grey">
           <Link href="/demo/about" className="font-medium text-purple hover:underline">
-            Read the full write-up →
+            More about this demo →
           </Link>
         </div>
       </DialogContent>
@@ -130,115 +133,97 @@ function contentFor(pathname: string): InfoContent | null {
 }
 
 const RISK_SCORE_INFO: InfoContent = {
-  title: "How this works",
+  title: "How to read this page",
   description:
-    "The maths behind every score on screen, condensed. Every number below is reproducible from the evidence printed beside it on an investigation page — that reproducibility is checked by a script before this build is allowed to ship.",
+    "A short guide to the scores and checks in the security part. Every number on a case page can be traced back to the events listed on that page.",
   sections: [
     {
-      title: "The score is a sum, not a black box",
+      title: "What the score means",
       body: (
         <>
           <p>
-            Each detector contributes a signed number to a log-odds total — a <em>logit</em>. Positive
-            raises risk, negative lowers it. The logit passes through the logistic function{" "}
-            <span className="machine rounded-sm bg-purple-lt px-1 py-0.5 text-purple">
-              P = 1 / (1 + e⁻ˡᵒᵍⁱᵗ)
-            </span>{" "}
-            to a probability, and the displayed risk is that probability × 100. There is no separate
-            attribution step run after the fact — the contribution table <em>is</em> the model, not an
-            explanation bolted onto one.
+            Each account gets a score from 0 to 100: roughly, how likely it is that this activity
+            needs a person to look at it. Under 40 is low, 40 to 70 is worth a look, and over 70 is
+            serious.
           </p>
-          <p className="mt-2 text-xs text-grey">
-            One intercept (β₀ = −1.90) is shared by every subject. It is a prior over scored identities:
-            3 confirmed findings out of 23 investigations in the last 30 days, read straight off the
-            dashboard — not a tuned constant with no source.
+          <p className="mt-2">
+            The score is not a black box. On a case page, &ldquo;Why it scored&rdquo; lists every
+            signal and how many points it added or took away. Red points push the score up, green
+            points pull it down, and the points add up to the final score.
           </p>
         </>
       ),
     },
     {
-      title: "Context verification — four tests, not a checkbox",
+      title: "The approval check",
       body: (
         <>
-          <ul className="mt-1 space-y-1.5">
+          <p>
+            Most unusual activity is normal work. Before raising an alert, tellTale looks for a
+            ticket, on-call shift or HR record that explains it, and checks four things:
+          </p>
+          <ul className="mt-1.5 space-y-1">
             <li>
-              <b>Precedence</b> — did an operational record exist before the activity, not after?
+              <b>Made before?</b> It existed at least 30 minutes before the activity.
             </li>
             <li>
-              <b>Provenance</b> — was it created by someone other than the subject?
+              <b>Made by someone else?</b> The person doing the work didn&apos;t create it for
+              themselves.
             </li>
             <li>
-              <b>Scope match</b> — does the record&rsquo;s stated scope actually resolve to the
-              resources touched?
+              <b>Names this system?</b> It mentions the exact system that was touched.
             </li>
             <li>
-              <b>Proportionality</b> — is the volume plausible for the scope of work the record
-              describes?
+              <b>Right amount?</b> The amount of activity fits the task.
             </li>
           </ul>
           <p className="mt-2">
-            A record that exists and fails provenance — created by the subject it would authorise — is
-            not neutral. It moves the context term from a discount (−2.60) to a penalty (+2.20), because
-            manufacturing your own authorisation is itself the strongest signal on the page.
+            If all four pass, the score drops a lot. If the person wrote their own ticket, the score
+            goes up instead, because faking approval is a warning sign in itself.
           </p>
         </>
       ),
     },
     {
-      title: "Robust statistics — median and MAD, not mean and standard deviation",
-      body: (
-        <>
-          <p>
-            A cohort&rsquo;s ordinary behaviour is described by its median and its median absolute
-            deviation (MAD), not a mean and a standard deviation — a mean is dragged around by the one
-            person who happens to touch 400 resources in a day; a median isn&rsquo;t. Distance from that
-            baseline is a robust Z-score:
-          </p>
-          <p className="mt-1.5 machine rounded-sm bg-purple-lt px-2 py-1 text-purple">
-            Z = (x − median) / (1.4826 × MAD)
-          </p>
-          <p className="mt-2 text-xs text-grey">
-            The 1.4826 constant makes MAD comparable to a standard deviation under a normal
-            distribution, which is what lets a Z-score here mean roughly what a Z-score means anywhere
-            else.
-          </p>
-        </>
-      ),
-    },
-    {
-      title: "Trajectory surprisal — how unusual is the path, not just the destination",
+      title: "Compared with whom?",
       body: (
         <p>
-          An order-2 Markov model over action sequences, fitted per organisation, gives every
-          transition an empirical probability: how often does <span className="machine">B</span>{" "}
-          follow <span className="machine">A</span> here, historically? A transition with{" "}
-          <span className="machine">P = 0.0004</span> is the claim &ldquo;about four times in ten
-          thousand transitions of this shape, in this organisation&rdquo; — not a guess, a frequency.
-          Session perplexity is the geometric mean of those inverse probabilities across a session: a
-          perplexity of 12 reads as &ldquo;about one session in twelve looks like this.&rdquo;
+          Each account is compared with its own past and with teammates in the same role.
+          &ldquo;Typical&rdquo; means the middle value for the team, so one very busy person
+          doesn&apos;t distort it. The &ldquo;distance from normal&rdquo; number says how far
+          outside the usual range this account is: around 1 is ordinary, above 3 is unusual.
         </p>
       ),
     },
     {
-      title: "The queue sorts by expected cost, on purpose",
+      title: "Why the order of actions matters",
       body: (
         <p>
-          <span className="machine">expected cost = risk × asset criticality</span>. A 0.55 probability
-          on production credentials can rank above an 0.80 on a marketing folder — that inversion is
-          intentional, and it is the single most interesting thing on the queue page.
+          tellTale knows how often one action normally follows another in this company. Copying
+          code is common. Copying code, packing it into an archive and uploading it outside the
+          company within minutes is very rare. A label like &ldquo;about once in 2,500 times&rdquo;
+          is that frequency, measured on this company&apos;s own history.
         </p>
       ),
     },
     {
-      title: "What's real, and what's fixture",
+      title: "Why the list isn't sorted by score alone",
       body: (
         <p>
-          The detection design, the statistics and the architecture are specified in full in the
-          master document. Every number this build displays — every score, contribution, transition
-          probability and Z-score — is a literal written into a TypeScript fixture file. Nothing is
-          computed at runtime; there is no model running behind this interface. No accuracy figure
-          appears anywhere, because that evaluation has not been run yet, and stating one before it
-          has would be the least defensible thing on the screen.
+          The list is ordered by score multiplied by how important the system is. A medium score on
+          the payments system can matter more than a high score on a marketing folder, so it comes
+          first.
+        </p>
+      ),
+    },
+    {
+      title: "What is real in this demo",
+      body: (
+        <p>
+          The screens and the way the scoring works are real designs. The data is made up, and the
+          scores were prepared in advance and checked automatically so they all add up. No model
+          runs in this demo, and no accuracy figure is shown, because tellTale hasn&apos;t yet been
+          tested on real company data.
         </p>
       ),
     },
@@ -246,43 +231,37 @@ const RISK_SCORE_INFO: InfoContent = {
 };
 
 const SUPPRESSIONS_INFO: InfoContent = {
-  title: "How suppression works",
+  title: "How automatic closing works",
   description:
-    "Suppressed is not the same as discarded. Every alert a context record explained away is logged here with the record that explained it, and any of them can be reopened.",
+    "Closed is not the same as deleted. Every event tellTale closed on its own is listed here with the record that explained it, and any of them can be reopened.",
   sections: [
     {
-      title: "A suppression is a claim, and the claim is checked",
+      title: "An event is only closed when the record is genuine",
       body: (
         <p>
-          An anomaly is only suppressed when an operational record passes all four context tests —
-          precedence, provenance, scope match and proportionality. Expand any row to see the exact
-          record examined: who created it, when, and what scope it claims. Nothing is deleted when a
-          row is suppressed — it stays queryable, which is what makes reopening possible at all.
+          tellTale closes an unusual event only when a company record passes all four approval
+          checks: made before, made by someone else, names the system, right amount. Click any row
+          to see the record it relied on: who created it, when, and what it covers.
         </p>
       ),
     },
     {
-      title: "The reopened row is the one that matters",
+      title: "The reopened row",
       body: (
         <p>
-          A suppression can rest on a record the subject created and assigned to themselves — a record
-          that exists, but fails provenance. When the manufactured-context detector catches that, the
-          suppression is reopened and the anomaly is re-scored with the context term inverted from a
-          discount to a penalty. That reopened row links straight through to the investigation it
-          feeds, because the mechanism that hid the anomaly is the same mechanism that surfaced it
-          again — this is not two separate systems.
+          One row is marked as reopened. It was closed because a ticket existed, but the person had
+          written that ticket and assigned it to themselves. Once tellTale noticed, it reopened the
+          case and counted the ticket against them. The row links straight to that case.
         </p>
       ),
     },
     {
-      title: "Reading the reason chips",
+      title: "The reason filters",
       body: (
         <p>
-          Each chip above the table is a context reason code — the specific operational fact that
-          explained an anomaly away (an on-call rotation, a scope-matched ticket, approved travel, a
-          role change). Filtering by one shows every alert that reason accounted for; the count on
-          each chip is exact, and the four reason codes sum to the suppression total shown on the
-          dashboard.
+          The buttons above the table filter by reason: a matching ticket, being on call, approved
+          travel, a new role, or a newly registered device. The counts are exact and match the
+          numbers on the Overview page.
         </p>
       ),
     },
@@ -290,18 +269,17 @@ const SUPPRESSIONS_INFO: InfoContent = {
 };
 
 const CONNECTORS_INFO: InfoContent = {
-  title: "How connector health works",
+  title: "How app connections are watched",
   description:
-    "Every source is watched two ways at once: is it reporting at all, and is it reporting the right amount.",
+    "Each connected tool is checked in two ways: is it sending anything at all, and is it sending a normal amount.",
   sections: [
     {
-      title: "Silence is a signal, not a gap in the data",
+      title: "Silence is a warning, not a gap",
       body: (
         <p>
-          An attacker who disables a log source produces silence, and silence is monitored as actively
-          as data. Every connector carries a dead-man heartbeat and an expected-volume band, so a
-          source that stops reporting — or reports far less than it should — raises an alert of its
-          own rather than just quietly going missing from the count.
+          Someone trying to hide might switch off a log. So tellTale expects every tool to check in
+          regularly and to send roughly its usual amount of data. A tool that goes quiet, or sends
+          far less than usual, raises its own alert instead of quietly disappearing.
         </p>
       ),
     },
@@ -310,58 +288,46 @@ const CONNECTORS_INFO: InfoContent = {
       body: (
         <ul className="space-y-1.5">
           <li>
-            <b className="text-emerald-700">Healthy</b> — heartbeat inside its configured interval and
-            volume inside the learned band.
+            <b className="text-emerald-700">Healthy</b>: checking in on time, with a normal amount of
+            data.
           </li>
           <li>
-            <b className="text-amber-700">Degraded</b> — still reporting, but volume has fallen below
-            band. Detections that depend on it continue, flagged as partial.
+            <b className="text-amber-700">Degraded</b>: still sending, but much less than usual.
+            Checks continue and are marked as incomplete.
           </li>
           <li>
-            <b className="text-red-700">Silent</b> — no heartbeat at all. Detections that depend on it
-            are suspended rather than scored on an absence they can&apos;t see.
+            <b className="text-red-700">Silent</b>: nothing at all. Checks that need this tool are
+            paused rather than treating the silence as &ldquo;all clear&rdquo;.
           </li>
         </ul>
-      ),
-    },
-    {
-      title: "A window inside its band isn't proof of health on its own",
-      body: (
-        <p>
-          It&apos;s evidence the volume is ordinary. The heartbeat is what actually establishes a source is
-          alive — the two checks are independent on purpose, so a source can&apos;t fake health by staying
-          quiet in a way that happens to look like a normal quiet day.
-        </p>
       ),
     },
   ],
 };
 
 const WORKFORCE_INFO: InfoContent = {
-  title: "How the workforce module works",
+  title: "How the HR part works",
   description:
-    "Named employees, working time and activity — and, deliberately, no risk score anywhere in this module.",
+    "Working time and app usage for named employees, for HR and operations. This part never shows a risk score.",
   sections: [
     {
-      title: "This module answers operational questions",
+      title: "What it shows",
       body: (
         <p>
-          Who was working, on what, for how long, and with what coverage. It&apos;s named, because a
-          working-time record that can&apos;t be attributed to anyone isn&apos;t a working-time record. Working
-          and idle time come from endpoint input activity, not from which application was open —
-          nothing here labels an application productive or unproductive, and no member is ranked
-          against another.
+          Who was working, for how long, and in which apps. Working and idle time come from whether
+          the keyboard and mouse were in use, not from which app was open. No app is labelled
+          &ldquo;productive&rdquo; or &ldquo;unproductive&rdquo;, and nobody is ranked against
+          anyone else.
         </p>
       ),
     },
     {
-      title: "Two identity spaces, kept apart on purpose",
+      title: "Kept apart from security",
       body: (
         <p>
-          The risk module answers a different question and uses a different identity space — it&apos;s
-          pseudonymous, and it never sees this screen. That separation is the product, not a setting:
-          behavioural risk analysis doesn&apos;t need to know who anyone is until a human being decides it
-          does, and that decision takes two approvals, logged as an audited action.
+          The security part only sees ID numbers and never sees this screen. Finding out who is
+          behind a security ID takes two approvals (a security lead and an HR or legal lead), and
+          the request is logged.
         </p>
       ),
     },
@@ -369,42 +335,40 @@ const WORKFORCE_INFO: InfoContent = {
 };
 
 const CAPTURES_INFO: InfoContent = {
-  title: "How screen captures work",
+  title: "How screenshots work",
   description:
-    "Scheduled captures at a fixed cadence, plus captures a behavioural trigger requested. Most frames are generated; a few applications show a generic vendor reference image instead — either way, no frame is a capture of anyone's actual screen.",
+    "Screenshots are optional and depend on the country rules. In this demo most pictures are generated, and a few use a generic sample image; none show anyone's real screen.",
   sections: [
     {
       title: "What is and isn't collected",
       body: (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
           <div>
             <p className="label mb-1 text-emerald-700">Collected</p>
             <ul className="space-y-1 text-xs">
-              <li>Frame of the focused window at the capture instant</li>
-              <li>Application name, window title, timestamp</li>
-              <li>Whether the capture was scheduled or triggered</li>
+              <li>A picture of the window in use at that moment</li>
+              <li>The app name, window title and time</li>
+              <li>Whether it was a regular or an alert-triggered screenshot</li>
             </ul>
           </div>
           <div>
             <p className="label mb-1 text-red-700">Never collected</p>
             <ul className="space-y-1 text-xs">
-              <li>Keystrokes, clipboard contents, typed text</li>
-              <li>Message bodies or file contents</li>
-              <li>Anything from a personal device, on any profile</li>
+              <li>Keystrokes, clipboard or typed text</li>
+              <li>Message text or file contents</li>
+              <li>Anything from a personal device</li>
             </ul>
           </div>
         </div>
       ),
     },
     {
-      title: "This gallery is not where an investigation capture goes",
+      title: "Security screenshots don't appear here",
       body: (
         <p>
-          The triggered captures here are the workforce ones — a data-handling rule fired and asked
-          for a frame. A capture requested by a risk investigation is different: it&apos;s sealed on
-          collection, never appears in this gallery, and can&apos;t be opened by a workforce administrator.
-          Releasing one takes the same two approvals as unmasking, and it&apos;s released into the
-          investigation rather than into this module.
+          The alert-triggered screenshots in this gallery come from HR rules. A screenshot taken
+          for a security case is sealed straight away, never appears in this gallery, and can only
+          be opened with two approvals, inside the security case.
         </p>
       ),
     },

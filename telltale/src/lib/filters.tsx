@@ -15,10 +15,10 @@ import {
  * State lives in React context and nowhere else — no localStorage, no cookies,
  * no URL rewriting (PRD §9). It resets on reload, which is correct for a demo.
  */
-export const ALL_COHORTS = "All cohorts";
-export const ALL_SUBJECTS = "All subjects";
+export const ALL_COHORTS = "All teams";
+export const ALL_SUBJECTS = "All accounts";
 export const ALL_TEAMS = "All teams";
-export const ALL_MEMBERS = "All members";
+export const ALL_MEMBERS = "All people";
 
 interface FilterState {
   cohort: string;

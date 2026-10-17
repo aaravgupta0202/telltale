@@ -5,6 +5,7 @@ import { Field } from "@/components/panel";
 import { IdentityGlyph, VerdictChip, riskTone } from "@/components/risk/chips";
 import { ActionButtons } from "@/components/risk/action-buttons";
 import type { Dossier, Subject } from "@/lib/fixtures";
+import { SEVERITY_PLAIN } from "@/lib/plain";
 
 const TONE_TEXT = {
   green: "text-emerald-700",
@@ -36,14 +37,14 @@ export function InvestigationHeader({
         className="mb-3 inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-700 transition-colors"
       >
         <ArrowLeft className="size-3.5" />
-        <span>Back to alerts</span>
+        <span>Back to the list of alerts</span>
       </Link>
 
       <div className="panel flex flex-col lg:flex-row items-stretch border border-line bg-white rounded-sm overflow-hidden ">
         {/* Calibrated Risk Block */}
         <div className="flex w-full lg:w-60 shrink-0 flex-col justify-center border-b lg:border-b-0 lg:border-r border-line bg-slate-50/50 px-5 py-4">
           <p className="label text-slate-500 text-[10px]">
-            Calibrated risk score
+            Risk score
           </p>
           <div className="mt-1 flex items-baseline gap-2">
             <span
@@ -66,36 +67,39 @@ export function InvestigationHeader({
                   VERDICT_LABEL_TONE.MONITORING,
               )}
             >
-              {dossier.verdictLabel}
+              {SEVERITY_PLAIN[dossier.verdictLabel] ?? dossier.verdictLabel}
             </span>
             <VerdictChip verdict={subject.verdict} />
           </div>
           <p className="machine mt-2.5 text-xs text-slate-500">
-            P = {dossier.probability.toFixed(2)} · logit{" "}
-            {dossier.logitTotal >= 0 ? "+" : "−"}
-            {Math.abs(dossier.logitTotal).toFixed(2)}
+            {Math.round(dossier.probability * 100)}% likely to need action
           </p>
         </div>
 
         {/* Identity & Trajectory Summary */}
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 px-5 py-4">
           <div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2.5">
               <IdentityGlyph identityClass={subject.identityClass} />
               <h1 className="machine text-2xl leading-none font-bold text-slate-900 tracking-tight">
                 {subject.pseudonym}
               </h1>
+              {subject.label && (
+                <span className="machine text-sm font-semibold text-slate-600">
+                  {subject.label}
+                </span>
+              )}
               <span className="label rounded border border-line bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">
-                {subject.identityClass}
+                {{ human: "Person", service: "Service account", agent: "AI agent" }[subject.identityClass]}
               </span>
               {!subject.sensorEquipped ? (
                 <span className="label rounded border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
-                  Cloud-only
+                  No desktop app
                 </span>
               ) : (
                 <span className="label rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 flex items-center gap-1">
                   <Cpu className="size-2.5 text-emerald-600" />
-                  Sensor
+                  Desktop app
                 </span>
               )}
             </div>
@@ -105,18 +109,18 @@ export function InvestigationHeader({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.7fr_repeat(4,1fr)] gap-4 border-t border-line pt-3">
-            <Field label="Cohort">{subject.cohort}</Field>
-            <Field label="Cohort size" mono>
+            <Field label="Team">{subject.cohort}</Field>
+            <Field label="Team size" mono>
               {subject.cohortSize}
             </Field>
-            <Field label="Tenure" mono>
+            <Field label="Account age" mono>
               {subject.tenureDays}d
             </Field>
-            <Field label="Priority score" mono>
+            <Field label="Priority" mono>
               {subject.expectedCost.toFixed(1)}
             </Field>
-            <Field label="Sensor">
-              {subject.sensorEquipped ? "Deployed" : "Not deployed"}
+            <Field label="Desktop app">
+              {subject.sensorEquipped ? "Installed" : "None"}
             </Field>
           </div>
         </div>
@@ -126,13 +130,13 @@ export function InvestigationHeader({
           <div>
             <p className="label mb-2 text-emerald-800 text-[10px] flex items-center gap-1 font-bold">
               <ShieldAlert className="size-3 text-emerald-600" />
-              Containment Actions
+              What you could do
             </p>
             <ActionButtons pseudonym={subject.pseudonym} />
           </div>
           <p className="mt-2 text-[10px] leading-relaxed text-slate-500">
-            Each action explains simulated workflow. No live connectors called
-            in demo.
+            In this demo the buttons only explain what would happen. Nothing is
+            changed.
           </p>
         </div>
       </div>

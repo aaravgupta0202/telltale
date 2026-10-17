@@ -16,7 +16,8 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "tellTale — Context-aware behavioural detection",
   description:
-    "Context-aware behavioural transition detection. See the reasoning behind every score, not just a number.",
+    "Finds compromised and insider accounts by noticing when their behaviour changes, and checks the change against the company's own records. Team Purple Crocs, CyberForge by Mitigata (AI & Cybersecurity).",
+  authors: [{ name: "Aarav Gupta" }, { name: "Aankhi Roy" }],
 };
 
 /**

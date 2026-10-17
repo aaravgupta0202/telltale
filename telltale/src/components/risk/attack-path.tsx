@@ -18,6 +18,7 @@ import type {
   AttackPathNode,
   Sensitivity,
 } from "@/lib/fixtures";
+import { actionPlain } from "@/lib/plain";
 
 /**
  * PRD §5.3E: left-to-right node graph of the trajectory, React Flow, fixed
@@ -51,7 +52,7 @@ function StepNode({ data }: NodeProps<Node<StepData>>) {
     <div
       className="w-44 rounded-sm border border-line bg-white px-3 py-2 "
       style={{ borderLeftColor: color, borderLeftWidth: 3.5 }}
-      title={`${data.label} — ${data.sensitivity} sensitivity`}
+      title={`${actionPlain(data.label)} (${data.label}) — ${data.sensitivity} sensitivity`}
     >
       <Handle
         type="target"
@@ -59,9 +60,10 @@ function StepNode({ data }: NodeProps<Node<StepData>>) {
         isConnectable={false}
         className="!size-1.5 !border-0 !bg-slate-400"
       />
-      <p className="machine truncate text-[11px] leading-tight font-bold text-slate-900">
-        {data.label}
+      <p className="text-[11.5px] leading-tight font-bold text-slate-900">
+        {actionPlain(data.label)}
       </p>
+      <p className="machine truncate text-[9.5px] text-slate-400">{data.label}</p>
       <p className="mt-1 text-[10px] leading-snug text-slate-500">
         {data.sublabel}
       </p>
@@ -139,8 +141,10 @@ export function AttackPath({
   const anomalous = fixtureEdges.filter((e) => e.anomalous);
   /* Node ids are internal (n0, n1) on generated rows, so the prose below names
  the actions rather than the ids. */
-  const labelOf = (id: string) =>
-    fixtureNodes.find((n) => n.id === id)?.label ?? id;
+  const labelOf = (id: string) => {
+    const label = fixtureNodes.find((n) => n.id === id)?.label;
+    return label ? actionPlain(label) : id;
+  };
 
   return (
     <div>
@@ -178,8 +182,8 @@ export function AttackPath({
       <div className="px-4 py-2.5">
         {anomalous.length === 0 ? (
           <p className="text-xs leading-relaxed text-slate-500">
-            No transition in this path falls below the surprisal threshold. The
-            path is unusual in its resources, not in its shape.
+            Every step here is a common next step in this company. What stands
+            out is which systems were touched, not the order.
           </p>
         ) : (
           <ul className="space-y-1">
@@ -188,11 +192,13 @@ export function AttackPath({
                 key={`${e.from}-${e.to}`}
                 className="text-xs leading-relaxed text-slate-600"
               >
-                <span className="machine text-red-600 font-bold">
-                  P({labelOf(e.to)} | {labelOf(e.from)}) ={" "}
-                  {formatP(e.probability ?? 0)}
-                </span>{" "}
-                — {describe(e.probability ?? 0)}
+                <span className="machine font-bold text-red-600">
+                  {labelOf(e.from)} → {labelOf(e.to)}
+                </span>
+                : {describe(e.probability ?? 0)}{" "}
+                <span className="machine text-slate-400">
+                  (P = {formatP(e.probability ?? 0)})
+                </span>
               </li>
             ))}
           </ul>
@@ -210,7 +216,7 @@ function formatP(p: number) {
 
 /** The "one in N" reading of a transition probability, stated in words. */
 function describe(p: number) {
-  if (p <= 0) return "never observed in this organisation";
+  if (p <= 0) return "never seen before in this company";
   const n = Math.round(1 / p);
-  return `roughly one in ${n.toLocaleString("en-US")} transitions of this shape in this organisation`;
+  return `in this company, this step follows the previous one only about once in ${n.toLocaleString("en-US")} times`;
 }

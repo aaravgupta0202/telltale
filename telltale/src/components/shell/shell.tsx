@@ -6,6 +6,7 @@ import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 import { DemoLauncher } from "./demo-launcher";
 import { MethodologyInfo } from "./methodology-info";
+import { Walkthrough } from "./walkthrough";
 
 interface SidebarContextType {
   collapsed: boolean;
@@ -54,6 +55,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <Topbar />
             <main className="min-w-0 flex-1 px-4 py-4 pb-20 sm:px-6 sm:py-5">
               {children}
+              <Walkthrough />
             </main>
           </div>
           <DemoLauncher />

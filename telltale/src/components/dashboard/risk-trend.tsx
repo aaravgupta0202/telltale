@@ -91,7 +91,7 @@ export function RiskTrend() {
                       {label}
                     </p>
                     <p className="machine text-xs text-emerald-700 font-bold">
-                      peak risk {payload[0].value}
+                      highest score {payload[0].value}
                     </p>
                   </div>
                 ) : null
@@ -160,8 +160,8 @@ export function RiskTrend() {
                 {m.label.split(" ").slice(1).join(" ")}
               </span>
               <span className="machine ml-auto text-xs text-slate-500">
-                {m.raisedRisk !== undefined ? `raised ${m.raisedRisk} → ` : ""}
-                calibrated {m.risk}
+                {m.raisedRisk !== undefined ? `before checks ${m.raisedRisk} → ` : ""}
+                final score {m.risk}
               </span>
             </button>
           </li>

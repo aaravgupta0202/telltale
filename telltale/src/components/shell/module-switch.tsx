@@ -16,7 +16,7 @@ import {
 import { MODULE_HOME, MODULE_ROLE, type Module } from "@/lib/nav";
 
 const MODULES: { id: Module; label: string; Icon: typeof Shield }[] = [
-  { id: "risk", label: "Risk", Icon: Shield },
+  { id: "risk", label: "Security", Icon: Shield },
   { id: "workforce", label: "Workforce", Icon: Briefcase },
 ];
 
@@ -92,10 +92,11 @@ export function ModuleSwitch({
       >
         <DialogContent showCloseButton={false} className="rounded-sm">
           <DialogHeader>
-            <DialogTitle>Crossing modules is an audited action.</DialogTitle>
+            <DialogTitle>Switching to the other part is logged</DialogTitle>
             <DialogDescription>
-              In production this requires both role grants. You are switching
-              from{" "}
+              Security and HR use separate parts of tellTale, and in a real
+              company one person would rarely have access to both. In this demo
+              you can look at both. You are switching from{" "}
               <span className="machine rounded-sm border border-emerald-200 bg-emerald-50 px-1 py-0.5 text-emerald-800">
                 {MODULE_ROLE[current]}
               </span>{" "}

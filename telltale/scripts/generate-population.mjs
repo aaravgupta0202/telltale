@@ -72,9 +72,9 @@ const BE_PEERS = [
  * evidence printed beside it.
  */
 const QUEUE = [
-  { p: "4912", cohort: "Backend Engineering",  cls: "human",   risk: 93, crit: 1.00, verdict: "absent",     sensor: true,  res: 410, status: "new",      top: "Trajectory surprisal P = 0.0004",        dominant: null,          ev: {} },
-  { p: "7741", cohort: "Automation Platform",  cls: "service", risk: 96, crit: 0.88, verdict: "absent",     sensor: false, res: 64,  status: "new",      top: "Honeytoken credential used",             dominant: "deception",   ev: { firstSeen: 12, asn: 3, privilege: 2 } },
-  { p: "2071", cohort: "Backend Engineering",  cls: "human",   risk: 78, crit: 0.97, verdict: "suspicious", sensor: true,  res: 38,  status: "triaging", top: "Manufactured context detected",          dominant: null,          ev: {} },
+  { p: "4912", cohort: "Backend Engineering",  cls: "human",   risk: 93, crit: 1.00, verdict: "absent",     sensor: true,  res: 410, status: "new",      top: "Copied, zipped and uploaded code: very rare order of actions", dominant: null,          ev: {} },
+  { p: "7741", cohort: "Automation Platform",  cls: "service", risk: 96, crit: 0.88, verdict: "absent",     sensor: false, res: 64,  status: "new",      top: "Used a decoy password planted as a trap", dominant: "deception",   ev: { firstSeen: 12, asn: 3, privilege: 2 } },
+  { p: "2071", cohort: "Backend Engineering",  cls: "human",   risk: 78, crit: 0.97, verdict: "suspicious", sensor: true,  res: 38,  status: "triaging", top: "Wrote their own ticket, then copied code", dominant: null,          ev: {} },
   { p: "5530", cohort: "Platform SRE",         cls: "human",   risk: 74, crit: 0.95, verdict: "absent",     sensor: true,  res: 34,  status: "new",      top: null,                                     dominant: "presence",    ev: { presenceActions: 8, firstSeen: 7, asn: 1, jsd: 0.10 } },
   { p: "1188", cohort: "Data Platform",        cls: "agent",   risk: 71, crit: 0.93, verdict: "partial",    sensor: false, res: 147, status: "new",      top: null,                                     dominant: "egress",      ev: { egress: 3, firstSeen: 9 } },
   { p: "6302", cohort: "Platform SRE",         cls: "human",   risk: 69, crit: 0.90, verdict: "absent",     sensor: true,  res: 29,  status: "triaging", top: null,                                     dominant: "egress",      ev: { egress: 2, firstSeen: 6, asn: 2, jsd: 0.14 } },
@@ -96,7 +96,7 @@ const QUEUE = [
 const PRIYA = {
   p: "8830", cohort: "Backend Engineering", cls: "human", risk: 14, crit: 1.00,
   verdict: "authorised", sensor: true, res: 9, status: "suppressed",
-  top: "First-ever repository access — authorised",
+  top: "First time using this code, approved by a ticket",
 };
 
 /**
@@ -116,14 +116,14 @@ const COHORT_PLAN = [
 ];
 
 const FILLER_SIGNALS = [
-  "Volumetric within baseline",
-  "Session pattern stable",
-  "Cohort-tracking, no drift",
-  "Single off-hours session",
-  "Permission read, in scope",
-  "New device, enrolled",
-  "Scope-matched ticket present",
-  "On-call rotation active",
+  "Normal amount of activity",
+  "Normal pattern of actions",
+  "In step with teammates",
+  "One late-night login",
+  "Read permissions, approved",
+  "New laptop, registered",
+  "Matching ticket in place",
+  "On call at the time",
 ];
 
 /* --------------------------------------------------------------- build */
@@ -317,18 +317,18 @@ const F = {
 
 /** Label used in the queue's Top signal column, derived from the largest term. */
 const SIGNAL_LABEL = {
-  "Trajectory surprisal": (d) => `Session perplexity ${d.perplexity}`,
-  "Deception trigger": () => "Honeytoken credential used",
-  "Presence divergence": (d) => `Presence divergence, ${d.presenceActions} actions while locked`,
-  "Novel egress path": (d) => `Novel egress path, ${d.egress} unaffiliated destination${d.egress === 1 ? "" : "s"}`,
-  "Cohort divergence": (d) => `Cohort divergence, D = +${d.drift.toFixed(2)}`,
-  "Off-hours activity": (d) => `Off-hours activity, ${d.offHours} session${d.offHours === 1 ? "" : "s"}`,
-  "Graph topology change": (d) => `Graph topology, ${d.edges} new external edges`,
-  "Privilege change": (d) => `Privilege change, ${d.privilege} outside change window`,
-  "Composition drift": (d) => `Composition drift, JSD ${d.jsd.toFixed(2)}`,
-  "Device novelty": (d) => `Device novelty, ${d.devices} newly enrolled`,
-  "Volumetric deviation": (d) => `Volumetric deviation, Z = ${d.z >= 0 ? "+" : ""}${d.z.toFixed(2)}`,
-  "Resource novelty": (d) => `Resource novelty, ${d.firstSeen} first-seen resources`,
+  "Trajectory surprisal": () => "Unusual order of actions",
+  "Deception trigger": () => "Used a decoy password planted as a trap",
+  "Presence divergence": (d) => `${d.presenceActions} actions while their laptop was locked`,
+  "Novel egress path": (d) => `Sent data to ${d.egress} new outside place${d.egress === 1 ? "" : "s"}`,
+  "Cohort divergence": () => "Drifting away from teammates",
+  "Off-hours activity": (d) => `${d.offHours} session${d.offHours === 1 ? "" : "s"} at unusual hours`,
+  "Graph topology change": (d) => `${d.edges} new outside contacts`,
+  "Privilege change": (d) => `${d.privilege} permission change${d.privilege === 1 ? "" : "s"} outside the approved window`,
+  "Composition drift": () => "Big change in type of work",
+  "Device novelty": (d) => `${d.devices} new device${d.devices === 1 ? "" : "s"}`,
+  "Volumetric deviation": () => "Far more activity than teammates",
+  "Resource novelty": (d) => `${d.firstSeen} systems used for the first time`,
 };
 
 function buildReducedDossier(q) {
@@ -346,8 +346,8 @@ function buildReducedDossier(q) {
   // cohort panel on the same page is making.
   push(
     "Volumetric deviation",
-    `${q.res} resources vs cohort median ${stats.median} (MAD ${stats.mad}) — robust Z = ${z >= 0 ? "+" : ""}${z.toFixed(2)}${
-      z <= 0.5 ? " — within baseline" : ""
+    `${q.res} files and systems, against a typical ${stats.median} for the team (spread ${stats.mad}) — robust Z = ${z >= 0 ? "+" : ""}${z.toFixed(2)}${
+      z <= 0.5 ? " — normal for this team" : ""
     }`,
     F.volumetric(z),
   );
@@ -355,55 +355,55 @@ function buildReducedDossier(q) {
   if (ev.firstSeen) {
     push(
       "Resource novelty",
-      `${ev.firstSeen} of ${q.res} resources first seen in 180d`,
+      `${ev.firstSeen} of ${q.res} files and systems used for the first time in 180 days`,
       F.resourceNovelty(ev.firstSeen),
     );
   }
   if (ev.asn) {
     push(
       "Geo / ASN novelty",
-      `${ev.asn} session${ev.asn === 1 ? "" : "s"} from an ASN unseen in 180d`,
+      `${ev.asn} login${ev.asn === 1 ? "" : "s"} from a network not seen in 180 days`,
       F.asn(ev.asn),
     );
   }
   if (ev.egress) {
     push(
       "Novel egress path",
-      `${ev.egress} destination${ev.egress === 1 ? "" : "s"} outside org accounts, no prior instance`,
+      `Sent data to ${ev.egress} place${ev.egress === 1 ? "" : "s"} outside the company, never used before`,
       F.egress(ev.egress),
     );
   }
   if (ev.drift) {
     push(
       "Cohort divergence",
-      `D = +${ev.drift.toFixed(2)} against the 60–90d anchor, net of cohort movement`,
+      `Drifting away from teammates compared with 2–3 months ago (D = +${ev.drift.toFixed(2)})`,
       F.divergence(ev.drift),
     );
   }
   if (ev.edges) {
-    push("Graph topology change", `${ev.edges} new external-domain edges this window`, F.graph(ev.edges));
+    push("Graph topology change", `Contacted ${ev.edges} outside companies for the first time`, F.graph(ev.edges));
   }
   if (ev.offHours) {
     push(
       "Off-hours activity",
-      `${ev.offHours} session${ev.offHours === 1 ? "" : "s"} outside the subject's own working-hours envelope`,
+      `${ev.offHours} session${ev.offHours === 1 ? "" : "s"} well outside this person's normal working hours`,
       F.offHours(ev.offHours),
     );
   }
   if (ev.privilege) {
     push(
       "Privilege change",
-      `${ev.privilege} permission or policy edit${ev.privilege === 1 ? "" : "s"} outside the change window`,
+      `${ev.privilege} permission or policy change${ev.privilege === 1 ? "" : "s"} made outside the approved change window`,
       F.privilege(ev.privilege),
     );
   }
   if (ev.devices) {
-    push("Device novelty", `${ev.devices} device fingerprints first seen in 180d`, F.device(ev.devices));
+    push("Device novelty", `${ev.devices} device${ev.devices === 1 ? "" : "s"} not seen in 180 days`, F.device(ev.devices));
   }
   if (q.dominant === "deception") {
     push(
       "Deception trigger",
-      "Decoy credential ci-deploy-svc-legacy presented against ledger-api — prior-seeded weight, exempt from suppression",
+      "Used the decoy password ci-deploy-svc-legacy on ledger-api. A decoy is never explained away by a ticket",
       F.deception(),
     );
   }
@@ -411,14 +411,14 @@ function buildReducedDossier(q) {
   if (q.sensor && ev.presenceActions) {
     push(
       "Presence divergence",
-      `${ev.presenceActions} authenticated actions while the endpoint reported locked or idle`,
+      `${ev.presenceActions} actions while the person's laptop was locked or idle`,
       F.presence(ev.presenceActions),
     );
   }
   if (q.sensor && ev.jsd) {
     push(
       "Composition drift",
-      `JSD ${ev.jsd.toFixed(2)} vs anchor, net of cohort movement`,
+      `The mix of work has shifted compared with 2–3 months ago (JSD ${ev.jsd.toFixed(2)})`,
       F.composition(ev.jsd),
     );
   }
@@ -463,24 +463,24 @@ function buildReducedDossier(q) {
   const perplexity = r2(4 * Math.exp(residual));
   push(
     "Trajectory surprisal",
-    `Session perplexity ${perplexity.toFixed(2)} against the order-2 backoff model`,
+    `About 1 in ${Math.round(perplexity)} sessions here follow this order of actions (session perplexity ${perplexity.toFixed(2)})`,
     residual,
   );
 
   const contributions = [
     {
       feature: "Base rate (intercept)",
-      evidence: "Prior over scored identities — 3 of 23 investigations confirmed in 30d",
+      evidence: "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real",
       logit: INTERCEPT,
     },
     ...rows,
     {
       feature: "Context verification",
       evidence: {
-        authorised: "AUTHORISED — precedence, provenance, scope and proportionality all pass",
-        partial: "PARTIAL — scope match failed; the anomaly is real but partly explained",
-        absent: "ABSENT — no authorising record found in any context source",
-        suspicious: "SUSPICIOUS — provenance failed; record created by the subject",
+        authorised: "APPROVED — the record passed all four checks",
+        partial: "PARTLY APPROVED — the record doesn't name the exact system touched",
+        absent: "NO APPROVAL — no ticket, on-call shift or HR record covers this",
+        suspicious: "FAKE APPROVAL — the record was made by this account",
       }[q.verdict],
       logit: gamma,
     },
@@ -515,21 +515,21 @@ function buildReducedDossier(q) {
     headline: subject.topSignal,
     contributions,
     checks: [
-      { test: "precedence", result: q.verdict === "absent" ? "fail" : "pass", finding: q.verdict === "absent" ? "No context record precedes this activity." : "Context record precedes the activity by more than the 30-minute minimum." },
-      { test: "provenance", result: q.verdict === "suspicious" ? "fail" : q.verdict === "absent" ? "fail" : "pass", finding: q.verdict === "suspicious" ? "Record was created by the subject of this investigation." : q.verdict === "absent" ? "No record to attribute." : "Assigned by an identity other than the subject." },
-      { test: "scope", result: q.verdict === "partial" ? "warn" : q.verdict === "absent" ? "fail" : "pass", finding: q.verdict === "partial" ? "Record does not name the specific resource touched." : q.verdict === "absent" ? "No record to resolve against." : "Record names the resource touched." },
-      { test: "proportionality", result: q.res > stats.median * 3 ? "warn" : "pass", finding: q.res > stats.median * 3 ? `Volume exceeds the 95th percentile for this work class (${q.res} vs cohort median ${stats.median}).` : "Volume is plausible for the scope of work described." },
+      { test: "precedence", result: q.verdict === "absent" ? "fail" : "pass", finding: q.verdict === "absent" ? "No record exists from before this activity." : "The record was created more than 30 minutes before the activity." },
+      { test: "provenance", result: q.verdict === "suspicious" ? "fail" : q.verdict === "absent" ? "fail" : "pass", finding: q.verdict === "suspicious" ? "The record was created by the subject of this investigation." : q.verdict === "absent" ? "There is no record, so there is no author to check." : "Assigned by someone other than this account." },
+      { test: "scope", result: q.verdict === "partial" ? "warn" : q.verdict === "absent" ? "fail" : "pass", finding: q.verdict === "partial" ? "The record doesn't name the exact system that was touched." : q.verdict === "absent" ? "No record mentions the system that was touched." : "The record names the system that was touched." },
+      { test: "proportionality", result: q.res > stats.median * 3 ? "warn" : "pass", finding: q.res > stats.median * 3 ? `${q.res} files and systems is more than 95% of similar tasks (typical for the team: ${stats.median}).` : "The amount of activity fits the task." },
     ],
     comparison: {
       metric: "Distinct resources touched",
-      caption: `${stats.n} peers in ${q.cohort}, excluding this subject. Median ${stats.median} resources, MAD ${stats.mad}.`,
+      caption: `${stats.n} teammates in ${q.cohort}, not counting this account. Typical: ${stats.median} files and systems; spread: ${stats.mad}.`,
       subjectValue: q.res,
       stats,
       zScore: z,
     },
     attackPath: { nodes: [], edges: [] },
     evidence: [],
-    sensorNote: q.sensor ? undefined : "Sensor not deployed on this identity; two detectors unavailable — presence divergence and composition drift.",
+    sensorNote: q.sensor ? undefined : "This account has no desktop app, so the two signals that need it (activity while the laptop is locked, change in type of work) aren't available.",
   };
 }
 
@@ -558,23 +558,30 @@ const reduced = QUEUE.filter((q) => !["4912", "2071"].includes(q.p)).map(buildRe
  * rises only at events.
  */
 
+/** Plain action names, read from the same list the interface uses. */
+const ACTION_PLAIN_GEN = Object.fromEntries(
+  [...(await fs.readFile(path.resolve("src/lib/plain.ts"), "utf8")).matchAll(/^  "([a-z_.]+)": "([^"]+)",$/gm)].map(
+    (m) => [m[1], m[2]],
+  ),
+);
+
 const TRAJECTORY_TEMPLATES = {
   deception: {
     start: 138,
     steps: [
-      ["okta.session.start", "Service credential · CI runner", "low"],
-      ["aws.sts.assume_role", "ci-deploy-svc-legacy · decoy credential", "critical", 6, 0.0002, true],
+      ["okta.session.start", "Service account · build server", "low"],
+      ["aws.sts.assume_role", "ci-deploy-svc-legacy · decoy password", "critical", 6, 0.0002, true],
       ["github.repo.clone", "ledger-api · first ever", "critical", 11, 0.31, false, true],
-      ["jenkins.job.trigger", "deploy-ledger-api · outside change window", "high", 19, 0.24],
+      ["jenkins.job.trigger", "deploy-ledger-api · outside approved hours", "high", 19, 0.24],
     ],
   },
   presence: {
     start: 201,
     steps: [
-      ["okta.session.start", "Corporate ASN · endpoint reported locked", "medium"],
-      ["aws.ssm.start_session", "bastion-01 · session manager", "high", 7, 0.22],
-      ["rds.snapshot.create", "payments-db · manual snapshot", "critical", 16, 0.04],
-      ["aws.s3.put_object", "s3://ops-scratch-3311 · first ever", "critical", 24, 0.0007, true, true],
+      ["okta.session.start", "Office network · laptop was locked", "medium"],
+      ["aws.ssm.start_session", "bastion-01 · remote session", "high", 7, 0.22],
+      ["rds.snapshot.create", "payments-db · full copy", "critical", 16, 0.04],
+      ["aws.s3.put_object", "s3://ops-scratch-3311 · first time ever", "critical", 24, 0.0007, true, true],
     ],
   },
   egress: {
@@ -583,7 +590,7 @@ const TRAJECTORY_TEMPLATES = {
       ["okta.session.start", "Corporate ASN · Bengaluru", "low"],
       ["bigquery.job.query", "events.sessions · 41M rows scanned", "high", 22, 0.29],
       ["gcs.object.export", "gs://analytics-export · 2.1 GB", "critical", 38, 0.11],
-      ["gcs.bucket.share", "Unaffiliated project · first ever", "critical", 51, 0.0003, true, true],
+      ["gcs.bucket.share", "Unknown outside project · first time ever", "critical", 51, 0.0003, true, true],
     ],
   },
   divergence: {
@@ -592,24 +599,24 @@ const TRAJECTORY_TEMPLATES = {
       ["okta.session.start", "Corporate ASN · Pune", "low"],
       ["zendesk.ticket.bulk_export", "1,204 tickets · CSV", "high", 34, 0.16],
       ["gdrive.file.download", "Support — escalations Q3", "medium", 47, 0.44],
-      ["gdrive.folder.share", "Link sharing enabled · first ever", "critical", 63, 0.006, true, true],
+      ["gdrive.folder.share", "Anyone with the link · first time ever", "critical", 63, 0.006, true, true],
     ],
   },
   offHours: {
     start: 192,
     steps: [
-      ["okta.session.start", "03:12 local · outside working envelope", "medium"],
-      ["netsuite.report.run", "Vendor master · full extract", "high", 9, 0.21],
+      ["okta.session.start", "03:12 · outside normal hours", "medium"],
+      ["netsuite.report.run", "All suppliers · full extract", "high", 9, 0.21],
       ["netsuite.export.csv", "vendors_full.csv · 8,410 rows", "critical", 17, 0.33],
-      ["gdrive.file.upload", "Personal drive · first ever", "critical", 28, 0.0009, true, true],
+      ["gdrive.file.upload", "Personal drive · first time ever", "critical", 28, 0.0009, true, true],
     ],
   },
   graph: {
     start: 628,
     steps: [
       ["okta.session.start", "Corporate ASN · Chennai", "low"],
-      ["gws.mail.filter.create", "Auto-forward rule · external domain", "high", 14, 0.03],
-      ["gws.mail.send_external", "4 unaffiliated domains · first ever", "critical", 26, 0.0005, true, true],
+      ["gws.mail.filter.create", "Auto-forward to an outside address", "high", 14, 0.03],
+      ["gws.mail.send_external", "4 outside companies · first time ever", "critical", 26, 0.0005, true, true],
       ["gws.contact.export", "Directory export · 612 records", "medium", 40, 0.19],
     ],
   },
@@ -617,9 +624,9 @@ const TRAJECTORY_TEMPLATES = {
     start: 505,
     steps: [
       ["okta.session.start", "Corporate ASN · Hyderabad", "low"],
-      ["aws.iam.policy.put", "AdministratorAccess-scoped inline policy", "critical", 12, 0.02],
-      ["aws.iam.role.attach", "svc-batch-runner · privilege widened", "high", 18, 0.47],
-      ["aws.s3.get_object", "s3://finance-close-2026 · first ever", "medium", 31, 0.008, true, true],
+      ["aws.iam.policy.put", "Full admin access policy", "critical", 12, 0.02],
+      ["aws.iam.role.attach", "svc-batch-runner · given more access", "high", 18, 0.47],
+      ["aws.s3.get_object", "s3://finance-close-2026 · first time ever", "medium", 31, 0.008, true, true],
     ],
   },
   composition: {
@@ -628,7 +635,7 @@ const TRAJECTORY_TEMPLATES = {
       ["okta.session.start", "Corporate ASN · Bengaluru", "low"],
       ["gdrive.folder.list", "Shared — Data Platform", "low", 18, 0.51],
       ["gdrive.file.download", "214 files · 40 minutes", "high", 36, 0.28],
-      ["dropbox.folder.sync", "Personal account · first ever", "critical", 58, 0.0012, true, true],
+      ["dropbox.folder.sync", "Personal account · first time ever", "critical", 58, 0.0012, true, true],
     ],
   },
   /* #3340 is authorised work on a newly enrolled device. Nothing in this path
@@ -636,8 +643,8 @@ const TRAJECTORY_TEMPLATES = {
   device: {
     start: 534,
     steps: [
-      ["okta.session.start", "New device fingerprint · enrolment approved", "medium"],
-      ["okta.mfa.challenge", "Push approved · enrolled device", "low", 4, 0.86],
+      ["okta.session.start", "New laptop · registration approved", "medium"],
+      ["okta.mfa.challenge", "Login approved on the registered laptop", "low", 4, 0.86],
       ["zendesk.ticket.update", "SUP-2214 · assigned queue", "low", 26, 0.39],
       ["confluence.page.view", "Support runbook — refunds", "low", 44, 0.42],
     ],
@@ -658,7 +665,7 @@ const TRAJECTORY_TEMPLATES = {
     steps: [
       ["okta.session.start", "Corporate ASN · Mumbai", "low"],
       ["netsuite.search.saved_run", "Open invoices · saved search", "low", 21, 0.47],
-      ["netsuite.record.fetch", "Sequential record reads", "medium", 39, 0.62],
+      ["netsuite.record.fetch", "Opened records one after another", "medium", 39, 0.62],
       ["netsuite.export.csv", "Close pack · 1 file", "high", 54, 0.09],
     ],
   },
@@ -757,7 +764,7 @@ function buildTrajectory(q, dossier) {
             from: 0,
             to: 1439,
             recordId: `TICKET-${3000 + Number(q.p) % 900}`,
-            label: "Scope-matched ticket · assigned by another identity",
+            label: "Matching ticket · assigned by someone else",
             verdict: "authorised",
           },
         ]
@@ -767,7 +774,7 @@ function buildTrajectory(q, dossier) {
               from: Math.max(0, first - 150),
               to: Math.round((first + last) / 2),
               recordId: `TICKET-${3000 + Number(q.p) % 900}`,
-              label: "On-call rotation · scope does not name the resource touched",
+              label: "On-call shift · doesn't name the system touched",
               verdict: "partial",
             },
           ]
@@ -787,14 +794,14 @@ function buildTrajectory(q, dossier) {
       id: `ev-${q.p}-1`,
       ts: iso(steps[0].t),
       kind: "Identity",
-      detail: `${steps[0].action} — ${steps[0].sublabel}`,
+      detail: `${ACTION_PLAIN_GEN[steps[0].action] ?? steps[0].action}: ${steps[0].sublabel} (${steps[0].action})`,
       source: "Okta",
     },
     ...actionSteps.map((s, i) => ({
       id: `ev-${q.p}-${i + 2}`,
       ts: iso(s.t),
       kind: "Action",
-      detail: `${s.action} — ${s.sublabel}`,
+      detail: `${ACTION_PLAIN_GEN[s.action] ?? s.action}: ${s.sublabel} (${s.action})`,
       source: s.action.startsWith("aws.")
         ? "AWS CloudTrail"
         : s.action.startsWith("github.") || s.action.startsWith("jenkins.")
@@ -818,7 +825,7 @@ function buildTrajectory(q, dossier) {
       id: `ev-${q.p}-pr`,
       ts: iso(steps[0].t),
       kind: "Presence",
-      detail: `Endpoint reported locked across ${q.ev.presenceActions} authenticated actions`,
+      detail: `Laptop was locked during ${q.ev.presenceActions} of this account's actions`,
       source: "Sensor",
     });
   }
@@ -826,7 +833,7 @@ function buildTrajectory(q, dossier) {
     id: `ev-${q.p}-bl`,
     ts: "2026-08-03T00:00:00Z",
     kind: "Baseline",
-    detail: `Anchor window 60–90d frozen; cohort median ${dossier.comparison.stats.median} resources (MAD ${dossier.comparison.stats.mad})`,
+    detail: `Comparison point from 2–3 months ago: typical for the team was ${dossier.comparison.stats.median} files and systems (spread ${dossier.comparison.stats.mad})`,
     source: "tellTale",
   });
 
@@ -846,23 +853,23 @@ const queueTimelines = QUEUE.filter((q) => !["4912", "2071"].includes(q.p)).map(
 /* ------------------------------------------------- suppression log (~40) */
 
 const SUPPRESSION_REASONS = [
-  { code: "SCOPE_MATCHED_TICKET", label: "Scope-matched ticket", source: "Jira" },
-  { code: "ON_CALL_ROTATION", label: "On-call rotation", source: "PagerDuty" },
+  { code: "SCOPE_MATCHED_TICKET", label: "Matching ticket", source: "Jira" },
+  { code: "ON_CALL_ROTATION", label: "On call", source: "PagerDuty" },
   { code: "APPROVED_TRAVEL", label: "Approved travel", source: "Workday" },
-  { code: "ROLE_CHANGE", label: "Role change", source: "Workday" },
-  { code: "NEW_DEVICE_APPROVED", label: "New device enrolment", source: "Okta" },
+  { code: "ROLE_CHANGE", label: "New role", source: "Workday" },
+  { code: "NEW_DEVICE_APPROVED", label: "Registered new device", source: "Okta" },
 ];
 const SUPPRESSED_ANOMALIES = [
-  "First-ever repository access",
-  "Off-hours authentication",
-  "Volumetric deviation, Z = +3.4",
-  "Unseen ASN",
-  "Bulk permission read",
-  "Cross-department graph edge",
-  "Composition drift, JSD 0.21",
-  "New device fingerprint",
-  "Archive creation, 62 files",
-  "External share created",
+  "First time using a code repository",
+  "Late-night login",
+  "Much more activity than usual",
+  "Login from a new network",
+  "Read many permissions at once",
+  "First contact with another department",
+  "Change in type of work",
+  "Login from a new device",
+  "Packed 62 files into an archive",
+  "Shared a file outside the company",
 ];
 
 const nonQueue = subjects.filter((s) => !QUEUE.some((q) => `#${q.p}` === s.pseudonym));
@@ -896,7 +903,7 @@ suppressions.unshift({
   id: "sup-000",
   ts: "2026-09-14T10:15:41Z",
   subjectPseudonym: "#8830",
-  anomaly: "First-ever repository access — payments-core",
+  anomaly: "First time using payments-core",
   suppressedBy: "Jira",
   reasonCode: "SCOPE_MATCHED_TICKET",
   reviewable: true,
@@ -914,7 +921,7 @@ suppressions.splice(3, 0, {
   id: "sup-rev",
   ts: "2026-09-14T14:47:09Z",
   subjectPseudonym: "#2071",
-  anomaly: "First-ever repository access — payments-core",
+  anomaly: "First time using payments-core",
   suppressedBy: "Jira",
   reasonCode: "SCOPE_MATCHED_TICKET",
   reviewable: true,

@@ -70,7 +70,7 @@ export function CohortStrip({ comparison }: { comparison: CohortComparison }) {
             className="machine"
             fill="var(--tt-purple)"
           >
-            median {stats.median}
+            typical {stats.median}
           </text>
           <text
             x={x(stats.median + band)}
@@ -80,7 +80,7 @@ export function CohortStrip({ comparison }: { comparison: CohortComparison }) {
             className="machine"
             fill="var(--tt-grey)"
           >
-            +1 MAD-unit
+            normal range
           </text>
 
           {/* Axis */}
@@ -125,7 +125,7 @@ export function CohortStrip({ comparison }: { comparison: CohortComparison }) {
               fill="var(--tt-grey)"
               fillOpacity="0.5"
             >
-              <title>{`peer — ${peers[i]} ${metric.toLowerCase()}`}</title>
+              <title>{`teammate — ${peers[i]} ${metric.toLowerCase()}`}</title>
             </circle>
           ))}
 
@@ -184,7 +184,7 @@ export function CohortStrip({ comparison }: { comparison: CohortComparison }) {
               fill="var(--tt-red)"
               transform={`rotate(45 ${subjectX} ${DOT_Y})`}
             >
-              <title>{`subject — ${subjectValue} ${metric.toLowerCase()}`}</title>
+              <title>{`this account — ${subjectValue} ${metric.toLowerCase()}`}</title>
             </rect>
             <text
               x={subjectX}
@@ -205,7 +205,7 @@ export function CohortStrip({ comparison }: { comparison: CohortComparison }) {
               className="machine"
               fill="var(--tt-red)"
             >
-              subject
+              this account
             </text>
           </g>
 
@@ -217,8 +217,8 @@ export function CohortStrip({ comparison }: { comparison: CohortComparison }) {
             className="machine"
             fill="var(--tt-grey)"
           >
-            n = {stats.n} peers · median {stats.median} · MAD {stats.mad} ·
-            robust Z ={" "}
+            {stats.n} teammates · typical {stats.median} · spread {stats.mad} ·
+            distance from normal (robust Z){" "}
             <tspan
               fill={Math.abs(zScore) > 3 ? "var(--tt-red)" : "var(--tt-ink)"}
               fontWeight="600"

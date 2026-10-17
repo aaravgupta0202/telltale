@@ -57,51 +57,51 @@ export default function UsagePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Workforce module"
-        title="Application usage"
-        description="Time by category and by application across the organisation, aggregated from the same per-member records the day views show."
+        eyebrow="HR part"
+        title="App usage"
+        description="How time was spent across the company on the example day, by type of app and by individual app."
       />
 
       <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <Stat
           icon={Clock}
-          label="Tracked time"
+          label="Time recorded"
           value={fmtHours(totalMinutes)}
-          sub={`${MEMBERS.length} members, one day`}
+          sub={`${MEMBERS.length} people, one day`}
         />
         <Stat
           icon={Layers}
-          label="Applications seen"
+          label="Apps used"
           value={String(APP_TOTALS.length)}
-          sub="distinct executables"
+          sub="different apps"
         />
         <Stat
           icon={PieChart}
           label="Categories"
           value={String(CATEGORY_TOTALS.length)}
-          sub="composition, not classification"
+          sub="types of app, not ratings"
         />
         <Stat
           icon={Sparkles}
           label="Most-used"
           value={topApp.application}
           appIcon={topApp.application}
-          sub={`${fmtHours(topApp.minutes)} across the org`}
+          sub={`${fmtHours(topApp.minutes)} across the company`}
         />
       </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-[1fr_1.25fr]">
         <Panel
           title="Time by category"
-          sub="Organisation-wide composition for the pinned day."
-          footnote="Composition drift is a risk signal in the other module, computed on pseudonymous identities. It is not computed here, and this screen carries no score."
+          sub="Share of working time in each type of app, across the company."
+          footnote="This breakdown is for HR reporting only. It is never given to the security part, and no score is calculated from it."
         >
           <CategoryDonut data={CATEGORY_TOTALS} />
         </Panel>
 
         <Panel
-          title="Applications"
-          sub="Ordered by recorded duration. Searchable by app name or category."
+          title="Apps"
+          sub="Sorted by time used. Search by app name or type."
           bodyClassName="p-0"
         >
           <AppUsageTable items={APP_TOTALS} topMinutes={topApp.minutes} />
@@ -109,10 +109,10 @@ export default function UsagePage() {
       </div>
 
       <Panel
-        title="Top application by hour"
-        sub="The application with the most recorded time in each hour of the working day, and how many members it was open for."
+        title="Most-used app each hour"
+        sub="For each hour of the working day, the app used most and how many people had it open."
         bodyClassName="p-0"
-        footnote="An hour with a high member count and a low minute total is a short shared activity (such as a standup or deploy window). Reading intent into either is a management judgement this screen deliberately does not make."
+        footnote="Many people but few minutes usually means a short shared activity, such as a stand-up meeting. This screen describes time; it doesn't judge it."
       >
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse text-sm">

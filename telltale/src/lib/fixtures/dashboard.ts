@@ -18,32 +18,32 @@ export const INVESTIGATIONS = 23;
 
 export const STAT_TILES: StatTile[] = [
   {
-    label: "Events ingested",
+    label: "Activity records read",
     value: "1,284,402",
-    sub: "last 30 days, 6 connectors",
+    sub: "in the last 30 days, from 6 connected tools",
   },
   {
-    label: "Alerts suppressed by context",
+    label: "Closed automatically",
     value: "1,847",
-    sub: "84% of raised anomalies",
+    sub: "84% of unusual events were explained by company records",
   },
-  { label: "Reached an analyst", value: "23", sub: "ranked, with evidence" },
+  { label: "Cases for an analyst", value: "23", sub: "each with a timeline and an explanation" },
   {
     label: "Confirmed findings",
     value: "3",
-    sub: "2 insider, 1 session theft",
+    sub: "2 employees taking data, 1 stolen login",
   },
 ];
 
 export const NOISE_SEGMENTS: NoiseSegment[] = [
   {
-    label: "Scope-matched ticket",
+    label: "Matching ticket",
     reasonCode: "SCOPE_MATCHED_TICKET",
     pct: 52,
     count: 1143,
   },
   {
-    label: "On-call rotation",
+    label: "On call at the time",
     reasonCode: "ON_CALL_ROTATION",
     pct: 18,
     count: 396,
@@ -54,15 +54,15 @@ export const NOISE_SEGMENTS: NoiseSegment[] = [
     pct: 7,
     count: 154,
   },
-  { label: "Role change", reasonCode: "ROLE_CHANGE", pct: 7, count: 154 },
+  { label: "New role", reasonCode: "ROLE_CHANGE", pct: 7, count: 154 },
   {
-    label: "Below threshold",
+    label: "Too small to matter",
     reasonCode: "BELOW_THRESHOLD",
     pct: 13,
     count: 286,
   },
   {
-    label: "Escalated",
+    label: "Sent to an analyst",
     reasonCode: "ESCALATED",
     pct: 3,
     count: 66,
@@ -71,7 +71,7 @@ export const NOISE_SEGMENTS: NoiseSegment[] = [
 ];
 
 export const NOISE_FOOTNOTE =
-  "Escalated anomalies are aggregated to the identity before ranking: 66 anomalies became 23 investigations. The four context reason codes account for 1,847 suppressions — all retained and queryable in the suppression log.";
+  "The 66 events sent to an analyst were grouped by account, so they became 23 cases rather than 66 separate alerts. The 1,847 closed automatically are all kept, with the record that explained each one, in Approved activity.";
 
 /**
  * Peak calibrated risk per day across the org, last 30 days. Mostly flat.
@@ -116,7 +116,7 @@ export const RISK_TREND: TrendPoint[] = [
     date: "Sep 14",
     risk: 93,
     spikeSubjectId: "subject_4912",
-    spikeLabel: "#4912 · 93 · no authorising record",
+    spikeLabel: "#4912 · score 93 · nothing approved it",
   },
 ];
 
@@ -126,16 +126,16 @@ export const TREND_MARKERS = [
     date: "Sep 14",
     risk: 78,
     subjectId: "subject_2071",
-    label: "#2071 · 78 · context manufactured",
+    label: "#2071 · score 78 · wrote their own ticket",
   },
   {
     date: "Sep 14",
     risk: 14,
     raisedRisk: 69,
     subjectId: "subject_8830",
-    label: "#8830 · raised 69 → 14 after verification",
+    label: "#8830 · 69, then 14 once the ticket was checked",
   },
 ] as const;
 
 export const DASHBOARD_LEDE =
-  "Six connectors, 1.28 million events, three findings. The descent between those numbers is the product.";
+  "What happened across the company over the last 30 days: 1.28 million activity records, narrowed down to three real problems.";

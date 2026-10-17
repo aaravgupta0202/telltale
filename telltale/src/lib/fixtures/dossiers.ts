@@ -33,11 +33,11 @@ import { BACKEND_PEERS } from "./population";
  */
 
 const INTERCEPT_EVIDENCE =
-  "Prior over scored identities — 3 of 23 investigations confirmed in 30d";
+  "Every account starts here. In the last 30 days, 3 of 23 cases turned out to be real";
 
 /** 17 of the 33 Backend Engineering peers cloned a new repository in 90 days. */
 const COHORT_CAPTION_SHARED =
-  "17 cohort members cloned a new repository in the last 90 days. 17 of 17 had an authorising ticket. 0 of 17 uploaded outside org accounts.";
+  "Of the 33 teammates, 17 copied a code repository they had never used before in the last 90 days. All 17 had a ticket approving it, and none of them uploaded anything outside the company.";
 
 /* ------------------------------------------------------------ #8830 Priya */
 
@@ -48,7 +48,7 @@ const priya: Dossier = {
   probability: 0.14,
   risk: 14,
   headline:
-    "First-ever access to a critical repository, fully covered by an authorising record created a day earlier by another identity.",
+    "Copied the payments-core code for the first time. A ticket for exactly this work, assigned by a teammate the day before, explains it, so no alert was raised.",
   contributions: [
     {
       feature: "Base rate (intercept)",
@@ -57,50 +57,50 @@ const priya: Dossier = {
     },
     {
       feature: "Resource novelty",
-      evidence: "payments-core — first access in 180d, no prior commit history",
+      evidence: "First time using payments-core in 180 days, with no earlier changes to it",
       logit: 1.35,
     },
     {
       feature: "Trajectory surprisal",
       evidence:
-        "P(github.pr.open | github.repo.clone) = 0.38 — the modal developer path",
+        "Copying code and then opening a code review is the most common path for developers here (P = 0.38)",
       logit: 0.62,
     },
     {
       feature: "Composition drift",
       evidence:
-        "JSD 0.11 vs 60–90d anchor — development share up 9pp, net of cohort",
+        "Time spent coding is up 9 points compared with 2–3 months ago, after allowing for the team (JSD 0.11)",
       logit: 0.43,
     },
     {
       feature: "Employment signal",
-      evidence: "Active; internal transfer recorded 12d ago (Workday)",
+      evidence: "Active employee; moved teams 12 days ago (Workday)",
       logit: 0.28,
     },
     {
       feature: "Volumetric deviation",
-      evidence: "9 resources vs cohort median 12 (MAD 4) — robust Z = -0.51",
+      evidence: "9 files and systems, against a typical 12 for the team (spread 4) — robust Z = -0.51",
       logit: 0,
     },
     {
       feature: "Cohort divergence",
-      evidence: "D = -0.08 against the frozen anchor, net of cohort movement",
+      evidence: "No drift away from teammates over recent weeks (D = -0.08)",
       logit: 0,
     },
     {
       feature: "Geo / ASN novelty",
-      evidence: "Corporate ASN, 214 sessions in 180d",
+      evidence: "Usual office network, used for 214 logins in 180 days",
       logit: 0,
     },
     {
       feature: "Presence divergence",
-      evidence: "Endpoint reported active for all 5 authenticated actions",
+      evidence: "The laptop was in use for all 5 actions",
       logit: 0,
     },
     {
       feature: "Context verification",
       evidence:
-        "AUTHORISED — precedence, provenance, scope and proportionality all pass",
+        "APPROVED — ticket TICKET-4471 passed all four checks",
       logit: -2.6,
     },
   ],
@@ -111,7 +111,7 @@ const priya: Dossier = {
       recordId: "TICKET-4471",
       createdAt: "2026-09-13T09:12:00Z",
       finding:
-        "Record precedes the activity by 25h 03m. Configured minimum lead is 30m.",
+        "The ticket was created 25 hours before the code was copied. The minimum is 30 minutes.",
     },
     {
       test: "provenance",
@@ -119,20 +119,20 @@ const priya: Dossier = {
       recordId: "TICKET-4471",
       createdBy: "subject_5530",
       finding:
-        "Assigned by subject_5530 — an identity other than the subject. Full weight.",
+        "Assigned by subject_5530, a different person, so it counts in full.",
     },
     {
       test: "scope",
       result: "pass",
       recordId: "TICKET-4471",
       finding:
-        "scope_refs resolves payments-core through the repository → service map. Exact match.",
+        "The ticket names payments-core, the exact code that was copied.",
     },
     {
       test: "proportionality",
       result: "pass",
       finding:
-        "9 resources against a scope of one service. Below the 95th percentile for this work class.",
+        "9 files and systems for a one-project task. Normal for this kind of work.",
     },
   ],
   comparison: {
@@ -147,7 +147,7 @@ const priya: Dossier = {
       {
         id: "okta",
         label: "okta.session.start",
-        sublabel: "Corporate ASN · Bengaluru",
+        sublabel: "Office network · Bengaluru",
         sensitivity: "low",
         x: 0,
         y: 60,
@@ -171,7 +171,7 @@ const priya: Dossier = {
       {
         id: "pr",
         label: "github.pr.open",
-        sublabel: "#2244 · review requested",
+        sublabel: "#2244 · asked teammates to review",
         sensitivity: "low",
         x: 630,
         y: 60,
@@ -188,42 +188,42 @@ const priya: Dossier = {
       id: "ev-p1",
       ts: "2026-09-14T09:06:12Z",
       kind: "Identity",
-      detail: "okta.session.start — ASN 24560, device enrolled 2025-11-04",
+      detail: "Logged in from the office network on a registered laptop (okta.session.start)",
       source: "Okta",
     },
     {
       id: "ev-p2",
       ts: "2026-09-13T09:12:00Z",
       kind: "Context record",
-      detail: "TICKET-4471 — scope payments-core, assigned by subject_5530",
+      detail: "TICKET-4471: work on payments-core, assigned by subject_5530",
       source: "Jira",
     },
     {
       id: "ev-p3",
       ts: "2026-09-14T10:15:41Z",
       kind: "Action",
-      detail: "github.repo.clone — payments-core",
+      detail: "Copied payments-core (github.repo.clone)",
       source: "GitHub Enterprise",
     },
     {
       id: "ev-p4",
       ts: "2026-09-14T11:04:55Z",
       kind: "Action",
-      detail: "github.pr.open — #2244",
+      detail: "Opened code review #2244 (github.pr.open)",
       source: "GitHub Enterprise",
     },
     {
       id: "ev-p5",
       ts: "2026-09-14T10:15:41Z",
       kind: "Presence",
-      detail: "Endpoint active; window focus on Visual Studio Code",
+      detail: "Laptop in use, with Visual Studio Code open",
       source: "Sensor",
     },
     {
       id: "ev-p6",
       ts: "2026-09-14T10:15:41Z",
       kind: "Suppression record",
-      detail: "sup-000 — SCOPE_MATCHED_TICKET, retained and queryable",
+      detail: "Alert closed as sup-000 because a ticket matches the work; kept on record",
       source: "tellTale",
     },
   ],
@@ -238,7 +238,7 @@ const marcus: Dossier = {
   probability: 0.93,
   risk: 93,
   headline:
-    "Four-step exfiltration trajectory across 3 platforms in a 28-minute window, with no operational context authorising any part of it.",
+    "At 1 a.m. this account copied the payments code, packed it into an archive and uploaded it outside the company, all within 28 minutes. No company record approves any of it.",
   contributions: [
     {
       feature: "Base rate (intercept)",
@@ -248,40 +248,40 @@ const marcus: Dossier = {
     {
       feature: "Trajectory surprisal",
       evidence:
-        "P(aws.s3.put_object | github.archive.create) = 0.0004 in this organisation",
+        "An upload straight after making an archive happens about 4 times in 10,000 here (P = 0.0004)",
       logit: 1.42,
     },
     {
       feature: "Employment signal",
       evidence:
-        "Voluntary resignation filed 4d ago (Workday), effective in 10d",
+        "Handed in their resignation 4 days ago (Workday); last day is in 10 days",
       logit: 1.05,
     },
     {
       feature: "Novel egress path",
       evidence:
-        "External S3 bucket outside org accounts — no prior instance in 180d",
+        "Uploaded to cloud storage outside the company's accounts, never done before in 180 days",
       logit: 0.83,
     },
     {
       feature: "Volumetric deviation",
-      evidence: "410 resources vs cohort median 12 (MAD 4) — robust Z = +67.11",
+      evidence: "410 files and systems, against a typical 12 for the team (spread 4) — robust Z = +67.11",
       logit: 0.62,
     },
     {
       feature: "Geo / ASN novelty",
       evidence:
-        "Unseen ASN 51167 (commercial VPN, Zurich); implied travel 4.1h",
+        "Logged in through a commercial VPN in Zurich never used before (ASN 51167); 4.1 hours of travel from the previous login",
       logit: 0.38,
     },
     {
       feature: "Presence divergence",
-      evidence: "3 authenticated actions while the endpoint reported locked",
+      evidence: "3 actions while the person's laptop was locked",
       logit: 0.19,
     },
     {
       feature: "Context verification",
-      evidence: "ABSENT — no authorising record found in any context source",
+      evidence: "NO APPROVAL — no ticket, on-call shift or HR record covers this",
       logit: 0,
     },
   ],
@@ -290,19 +290,19 @@ const marcus: Dossier = {
       test: "precedence",
       result: "fail",
       finding:
-        "No context record exists for this window in Jira, PagerDuty, Workday or calendar.",
+        "No ticket, on-call shift, HR record or calendar entry exists for this time.",
     },
-    { test: "provenance", result: "fail", finding: "No record to attribute." },
+    { test: "provenance", result: "fail", finding: "There is no record, so there is no author to check." },
     {
       test: "scope",
       result: "fail",
-      finding: "No record to resolve against payments-core.",
+      finding: "No record mentions payments-core.",
     },
     {
       test: "proportionality",
       result: "fail",
       finding:
-        "410 resources exceeds the 95th percentile for every work class in this cohort.",
+        "410 files and systems is far more than any normal task in this team.",
     },
   ],
   comparison: {
@@ -317,7 +317,7 @@ const marcus: Dossier = {
       {
         id: "okta",
         label: "okta.session.start",
-        sublabel: "ASN 51167 · Zurich · first in 180d",
+        sublabel: "VPN in Zurich · first time in 180 days",
         sensitivity: "medium",
         x: 0,
         y: 60,
@@ -333,7 +333,7 @@ const marcus: Dossier = {
       {
         id: "archive",
         label: "github.archive.create",
-        sublabel: "bundle.tar.gz · 410 files",
+        sublabel: "410 files into bundle.tar.gz",
         sensitivity: "critical",
         x: 420,
         y: 60,
@@ -341,7 +341,7 @@ const marcus: Dossier = {
       {
         id: "s3",
         label: "aws.s3.put_object",
-        sublabel: "External bucket · outside org accounts",
+        sublabel: "Storage outside the company",
         sensitivity: "critical",
         x: 630,
         y: 60,
@@ -358,7 +358,7 @@ const marcus: Dossier = {
       id: "ev-m1",
       ts: "2026-09-14T01:14:03Z",
       kind: "Identity",
-      detail: "okta.session.start — ASN 51167, commercial VPN, Zurich",
+      detail: "Logged in through a commercial VPN in Zurich (okta.session.start)",
       source: "Okta",
     },
     {
@@ -366,28 +366,28 @@ const marcus: Dossier = {
       ts: "2026-09-14T01:18:20Z",
       kind: "Identity",
       detail:
-        "okta.mfa.challenge — push approved, device fingerprint unrecognised",
+        "Login prompt approved from a device never seen before (okta.mfa.challenge)",
       source: "Okta",
     },
     {
       id: "ev-m3",
       ts: "2026-09-14T01:22:47Z",
       kind: "Action",
-      detail: "github.repo.clone — payments-core",
+      detail: "Copied payments-core (github.repo.clone)",
       source: "GitHub Enterprise",
     },
     {
       id: "ev-m4",
       ts: "2026-09-14T01:35:11Z",
       kind: "Action",
-      detail: "github.archive.create — bundle.tar.gz, 410 files",
+      detail: "Packed 410 files into bundle.tar.gz (github.archive.create)",
       source: "GitHub Enterprise",
     },
     {
       id: "ev-m5",
       ts: "2026-09-14T01:42:02Z",
       kind: "Action",
-      detail: "aws.s3.put_object — bucket outside org account boundary",
+      detail: "Uploaded the archive to storage outside the company (aws.s3.put_object)",
       source: "AWS CloudTrail",
     },
     {
@@ -395,14 +395,14 @@ const marcus: Dossier = {
       ts: "2026-09-10T16:04:00Z",
       kind: "Employment",
       detail:
-        "Lifecycle event — voluntary resignation filed, effective 2026-09-24",
+        "Resignation filed; last day 2026-09-24",
       source: "Workday",
     },
     {
       id: "ev-m7",
       ts: "2026-09-14T01:12:00Z",
       kind: "Presence",
-      detail: "Endpoint reported locked 01:12 → 01:58",
+      detail: "Laptop locked from 01:12 to 01:58",
       source: "Sensor",
     },
     {
@@ -410,7 +410,7 @@ const marcus: Dossier = {
       ts: "2026-09-14T01:22:47Z",
       kind: "Capture",
       detail:
-        "Triggered capture sealed — dual-custody release required to view",
+        "A screenshot was taken automatically and sealed; viewing it needs two approvals",
       source: "Sensor",
     },
   ],
@@ -425,7 +425,7 @@ const dana: Dossier = {
   probability: 0.78,
   risk: 78,
   headline:
-    "Behaviour alone would not have cleared the bar. The authorising record is the finding: the subject created and assigned it to themselves 40 minutes before the access.",
+    "A ticket approves this work, but this person wrote it and assigned it to themselves 40 minutes before copying the code. On its own the behaviour is only mildly unusual; the fake approval is what makes it serious.",
   contributions: [
     {
       feature: "Base rate (intercept)",
@@ -435,50 +435,50 @@ const dana: Dossier = {
     {
       feature: "Manufactured-context indicator",
       evidence:
-        "ticket.create(self) → ticket.assign(self) → first-ever access(scope) — indicator fired, prior-seeded weight",
+        "Created a ticket, assigned it to themselves, then used a system for the first time soon after",
       logit: 0.41,
     },
     {
       feature: "Cohort divergence",
       evidence:
-        "D = +2.41 sustained 6 weeks; CUSUM crossed in week 4 — +260% vs cohort",
+        "Drifting away from teammates for 6 weeks: +260% compared with the team (D = +2.41)",
       logit: 0.26,
     },
     {
       feature: "Resource novelty",
-      evidence: "payments-core — no contribution history for this subject",
+      evidence: "Has never made changes to payments-core before",
       logit: 0.15,
     },
     {
       feature: "Volumetric deviation",
-      evidence: "38 resources vs cohort median 12 (MAD 4) — robust Z = +4.38",
+      evidence: "38 files and systems, against a typical 12 for the team (spread 4) — robust Z = +4.38",
       logit: 0.08,
     },
     {
       feature: "Composition drift",
       evidence:
-        "JSD 0.19 vs anchor — file management share up 22pp, net of cohort",
+        "Time spent moving files is up 22 points compared with 2–3 months ago (JSD 0.19)",
       logit: 0.07,
     },
     {
       feature: "Geo / ASN novelty",
-      evidence: "Corporate ASN, 186 sessions in 180d",
+      evidence: "Usual office network, used for 186 logins in 180 days",
       logit: 0,
     },
     {
       feature: "Presence divergence",
-      evidence: "Endpoint reported active for all authenticated actions",
+      evidence: "The laptop was in use for all actions",
       logit: 0,
     },
     {
       feature: "Employment signal",
-      evidence: "Active; no lifecycle event in 180d",
+      evidence: "Active employee; no HR changes in 180 days",
       logit: 0,
     },
     {
       feature: "Context verification",
       evidence:
-        "SUSPICIOUS — provenance failed; the suppression channel was exercised abnormally",
+        "FAKE APPROVAL — the ticket was made by this account, so it counts against it",
       logit: 2.2,
     },
   ],
@@ -489,32 +489,32 @@ const dana: Dossier = {
       recordId: "TICKET-9920",
       createdAt: "2026-09-14T14:07:00Z",
       finding:
-        "Record precedes the activity by 40m. Exceeds the configured 30m minimum.",
+        "The ticket was created 40 minutes before the code was copied, just over the 30-minute minimum.",
     },
     {
       test: "provenance",
       result: "fail",
       recordId: "TICKET-9920",
       createdBy: "subject_2071",
-      finding: "Created by subject_2071 — the subject of this investigation.",
+      finding: "Created by subject_2071 — the subject of this investigation, who then assigned it to themselves.",
     },
     {
       test: "scope",
       result: "pass",
       recordId: "TICKET-9920",
-      finding: "scope_refs names payments-core. Exact match.",
+      finding: "The ticket names payments-core, the exact code that was copied.",
     },
     {
       test: "proportionality",
       result: "warn",
       finding:
-        "38 resources against a scope of one repository, with no contribution history in it. Above the 95th percentile for this work class.",
+        "38 files and systems for a one-project task, by someone who has never worked on it. That is more than 95% of similar tasks.",
     },
   ],
   comparison: {
     metric: "Distinct resources touched",
     caption:
-      "17 cohort members cloned a new repository in the last 90 days. 17 of 17 had a ticket assigned by another identity. 0 of 17 assigned their own.",
+      "Of the 33 teammates, 17 copied a code repository they had never used before in the last 90 days. All 17 had a ticket assigned by someone else; none of them wrote their own.",
     subjectValue: 38,
     stats: BACKEND_PEERS,
     zScore: 4.38,
@@ -524,7 +524,7 @@ const dana: Dossier = {
       {
         id: "create",
         label: "jira.ticket.create",
-        sublabel: "TICKET-9920 · created by self",
+        sublabel: "TICKET-9920 · written by themselves",
         sensitivity: "medium",
         x: 0,
         y: 60,
@@ -532,7 +532,7 @@ const dana: Dossier = {
       {
         id: "assign",
         label: "jira.ticket.assign",
-        sublabel: "assignee = creator",
+        sublabel: "assigned to themselves",
         sensitivity: "high",
         x: 190,
         y: 60,
@@ -548,7 +548,7 @@ const dana: Dossier = {
       {
         id: "archive",
         label: "github.archive.create",
-        sublabel: "export.tar.gz · 38 files",
+        sublabel: "38 files into export.tar.gz",
         sensitivity: "critical",
         x: 570,
         y: 60,
@@ -556,7 +556,7 @@ const dana: Dossier = {
       {
         id: "sync",
         label: "dropbox.file.upload",
-        sublabel: "Personal cloud account",
+        sublabel: "Personal Dropbox account",
         sensitivity: "critical",
         x: 760,
         y: 60,
@@ -574,49 +574,49 @@ const dana: Dossier = {
       id: "ev-d1",
       ts: "2026-09-14T14:05:38Z",
       kind: "Context record",
-      detail: "jira.ticket.create — TICKET-9920, scope payments-core",
+      detail: "Created TICKET-9920 for work on payments-core (jira.ticket.create)",
       source: "Jira",
     },
     {
       id: "ev-d2",
       ts: "2026-09-14T14:07:02Z",
       kind: "Context record",
-      detail: "jira.ticket.assign — assignee subject_2071 = creator",
+      detail: "Assigned TICKET-9920 to themselves, subject_2071 (jira.ticket.assign)",
       source: "Jira",
     },
     {
       id: "ev-d3",
       ts: "2026-09-14T14:47:09Z",
       kind: "Action",
-      detail: "github.repo.clone — payments-core",
+      detail: "Copied payments-core (github.repo.clone)",
       source: "GitHub Enterprise",
     },
     {
       id: "ev-d4",
       ts: "2026-09-14T15:02:44Z",
       kind: "Action",
-      detail: "github.archive.create — export.tar.gz, 38 files",
+      detail: "Packed 38 files into export.tar.gz (github.archive.create)",
       source: "GitHub Enterprise",
     },
     {
       id: "ev-d5",
       ts: "2026-09-14T15:19:27Z",
       kind: "Action",
-      detail: "dropbox.file.upload — personal cloud account",
+      detail: "Uploaded the archive to a personal Dropbox account (dropbox.file.upload)",
       source: "Google Workspace",
     },
     {
       id: "ev-d6",
       ts: "2026-08-03T00:00:00Z",
       kind: "Baseline",
-      detail: "Anchor window 60–90d: composition file management 11% → 33%",
+      detail: "2–3 months ago, 11% of time went on moving files; now it is 33%",
       source: "tellTale",
     },
     {
       id: "ev-d7",
       ts: "2026-09-14T14:47:09Z",
       kind: "Suppression record",
-      detail: "sup-rev — SCOPE_MATCHED_TICKET, now UNDER REVIEW",
+      detail: "This was first closed automatically because a ticket matched; that close is now under review",
       source: "tellTale",
     },
   ],

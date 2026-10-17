@@ -75,7 +75,7 @@ for (const doc of risk) {
 
 /* ---- PRD §7.1: no subject pseudonym anywhere in the workforce module ---
    Matched with a boundary so a hex colour like #8472bb is not a false hit. */
-const pseudonyms = fx.SUBJECTS.map((s) => s.pseudonym);
+const pseudonyms = fx.SCORED_SUBJECTS.map((s) => s.pseudonym);
 for (const doc of workforce) {
   const leaked = pseudonyms.filter((p) => new RegExp(`${p}\\b(?![0-9a-f])`).test(doc.html));
   ok(leaked.length === 0, `${doc.route}: no subject pseudonym appears in the workforce module`, leaked.join(", "));
@@ -137,6 +137,45 @@ for (const row of fx.QUEUE_ROWS) {
       `${row.pseudonym}: its page renders the contribution total row`,
     );
   }
+}
+
+/* ---- The pages added for the CyberForge deck ------------------------ */
+const page = (route) => docs.find((d) => d.route === route);
+
+const fool = page("/demo/fool-it");
+ok(!!fool, "/demo/fool-it: rendered");
+ok(!!fool && /Illustrative/.test(fool.html), "/demo/fool-it: labelled as illustrative");
+
+const legal = page("/demo/legal");
+ok(!!legal, "/demo/legal: rendered");
+ok(!!legal && /not legal advice/.test(legal.html), "/demo/legal: says it is not legal advice");
+for (const n of fx.NEVER_COLLECTED) {
+  ok(!!legal && legal.html.includes(n), `/demo/legal: lists "${n}" as never collected`);
+}
+
+for (const id of Object.keys(fx.ASSISTANT_QA)) {
+  const doc = page(`/demo/subject/${fx.routeIdFor(id)}`);
+  ok(
+    !!doc && doc.html.includes("Case assistant") && doc.html.includes("never changes a score"),
+    `${id}: assistant panel and its note are on the page`,
+  );
+}
+
+for (const a of fx.AGENT_SUBJECTS) {
+  const doc = page(`/demo/subject/${fx.routeIdFor(a.id)}`);
+  ok(!!doc && doc.html.includes(a.label), `${a.pseudonym}: its page names the agent (${a.label})`);
+}
+
+const landing = page("/");
+ok(
+  !!landing && landing.html.includes("Start the walkthrough"),
+  "/: the landing page offers the guided walkthrough",
+);
+
+/* ---- Old event branding is gone from every page ---------------------- */
+for (const doc of docs) {
+  const old = /manipal|M# 2026|team 001|round 1\b|employeye|verve/i.exec(doc.html);
+  ok(!old, `${doc.route}: no stale event or vendor branding`, old?.[0]);
 }
 
 console.log(`${failures === 0 ? "PASS" : "FAIL"} — ${checks - failures}/${checks} export checks passed`);

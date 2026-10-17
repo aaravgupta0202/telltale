@@ -25,45 +25,45 @@ export default function WorkforcePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Workforce module"
-        title="Team overview"
-        description="Working time, activity and coverage for named team members. This module carries no security scores and is kept strictly separated from alerts."
+        eyebrow="HR part"
+        title="People overview"
+        description="Working time and activity for each employee, by name. This part is for HR and operations. It never shows risk scores and is kept completely separate from security alerts."
       />
 
       <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Stat
           icon={Users}
-          label="People monitored"
+          label="People covered"
           value={String(MEMBERS.length)}
-          sub="with notice, on company devices"
+          sub="all told at onboarding; company devices only"
         />
         <Stat
           icon={Cpu}
-          label="Sensor coverage"
+          label="Have the desktop app"
           value={`${coverage}%`}
-          sub={`${sensor} of ${MEMBERS.length} endpoints enrolled`}
+          sub={`${sensor} of ${MEMBERS.length} laptops`}
         />
         <Stat
           icon={Camera}
-          label="Captures today"
+          label="Screenshots today"
           value={String(CAPTURES.length)}
-          sub="scheduled and triggered"
+          sub="regular and alert-triggered"
         />
         <Stat
           icon={Radio}
-          label="Active connectors"
+          label="Connected tools"
           value={`${active} / ${CONNECTORS.length}`}
-          sub="feeding this module"
+          sub="sending data to this part"
         />
       </div>
 
       <Panel
-        title="Members"
-        sub={`${MEMBERS.length} people, ${fmtHours(totalWorking)} of working time recorded on the pinned day. Roster order (not ranked).`}
+        title="People"
+        sub={`${MEMBERS.length} people, ${fmtHours(totalWorking)} of working time on the example day. Listed in team order, not ranked.`}
         right={<RibbonLegend />}
         bodyClassName="p-0"
         className="mb-4"
-        footnote="Working and idle time come from endpoint input activity, not from application choice. Nothing here classifies an application as productive or unproductive, and no member is compared against another."
+        footnote="Working and idle time are based on keyboard and mouse use, not on which app was open. No app is labelled productive or unproductive, and nobody is compared with anyone else."
       >
         <MemberTable />
       </Panel>

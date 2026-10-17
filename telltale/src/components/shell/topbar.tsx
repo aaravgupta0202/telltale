@@ -17,11 +17,11 @@ import {
   ALL_TEAMS,
   useFilters,
 } from "@/lib/filters";
-import { COHORT_STATS, MEMBERS, QUEUE_ROWS } from "@/lib/fixtures";
+import { AGENT_PEERS, COHORT_STATS, MEMBERS, QUEUE_ROWS } from "@/lib/fixtures";
 import { useSidebar } from "./shell";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const COHORTS = [ALL_COHORTS, ...COHORT_STATS.map((c) => c.cohort)];
+const COHORTS = [ALL_COHORTS, ...COHORT_STATS.map((c) => c.cohort), AGENT_PEERS.cohort];
 const SUBJECTS = [ALL_SUBJECTS, ...QUEUE_ROWS.map((r) => r.pseudonym)];
 const TEAMS = [ALL_TEAMS, ...Array.from(new Set(MEMBERS.map((m) => m.team)))];
 const MEMBER_NAMES = [ALL_MEMBERS, ...MEMBERS.map((m) => m.name)];
@@ -51,7 +51,7 @@ export function Topbar() {
   const options = risk
     ? ([
         {
-          label: "Cohort",
+          label: "Team",
           value: f.cohort,
           items: COHORTS,
           all: ALL_COHORTS,
@@ -59,7 +59,7 @@ export function Topbar() {
           key: "cohort",
         },
         {
-          label: "Subject",
+          label: "Account",
           value: f.subject,
           items: SUBJECTS,
           all: ALL_SUBJECTS,
@@ -77,7 +77,7 @@ export function Topbar() {
           key: "team",
         },
         {
-          label: "Member",
+          label: "Person",
           value: f.member,
           items: MEMBER_NAMES,
           all: ALL_MEMBERS,
@@ -129,9 +129,9 @@ export function Topbar() {
         </div>
       ))}
 
-      <span className="label ml-1 hidden text-grey sm:inline">Range</span>
+      <span className="label ml-1 hidden text-grey sm:inline">Day</span>
       <div
-        title="Date range is pinned to the single synthetic day in this demo build"
+        title="This demo shows one made-up example day"
         className="machine flex h-7 items-center gap-1.5 rounded-sm border border-line px-2.5 text-xs text-grey"
       >
         <Calendar className="size-3.5" />

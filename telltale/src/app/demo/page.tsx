@@ -17,6 +17,7 @@ import {
   SENSOR_COVERAGE,
   STAT_TILES,
   SUBJECTS,
+  AGENT_SUBJECTS,
 } from "@/lib/fixtures";
 
 const ICONS = [Layers, ShieldCheck, UserCheck, AlertTriangle];
@@ -25,8 +26,8 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Security module"
-        title="Detection overview"
+        eyebrow="Security part"
+        title="Overview"
         description={DASHBOARD_LEDE.replace(/ — /g, ": ")}
         right={
           <Link
@@ -59,8 +60,8 @@ export default function DashboardPage() {
       {/* Row 2: where the noise went, and what the month looked like. */}
       <div className="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
         <Panel
-          title="Where the noise went"
-          sub="Every anomaly raised in the last 30 days, by what explained it. Suppressed is not the same as discarded: each one is logged with the record that suppressed it."
+          title="What happened to every unusual event"
+          sub="Each unusual event in the last 30 days, grouped by what explained it. Most were normal work backed by a ticket, an on-call shift, approved travel or a role change. Closed events are kept, not deleted."
           bodyClassName="p-0"
           footnote={NOISE_FOOTNOTE.replace(/ — /g, ": ")}
         >
@@ -68,10 +69,10 @@ export default function DashboardPage() {
         </Panel>
 
         <Panel
-          title="Risk over the last 30 days"
-          sub="Peak calibrated risk across the organisation per day. Flat is the expected shape: a behavioural model that spikes daily is a model nobody reads."
+          title="Highest score each day, last 30 days"
+          sub="The highest score of any account on each day. Most days stay low; a tool that spikes every day would soon be ignored."
           bodyClassName="p-0"
-          footnote="Three findings this month. Click one to open its investigation."
+          footnote="The three labelled peaks are this month's real problems. Click one to open its case."
         >
           <RiskTrend />
         </Panel>
@@ -80,7 +81,7 @@ export default function DashboardPage() {
       {/* Row 3: connected tools */}
       <Panel
         title="App connections"
-        sub="Six sources, each with active status monitoring. One is behind."
+        sub="The six tools tellTale reads activity from. One of them has stopped sending data, which is itself treated as a warning."
         right={
           <Link
             href="/demo/connectors"
@@ -91,18 +92,17 @@ export default function DashboardPage() {
           </Link>
         }
         bodyClassName="p-0"
-        footnote={`Coverage: ${SENSOR_COVERAGE.equipped} of ${SENSOR_COVERAGE.total} scored identities carry the endpoint Sensor. The remaining ${
+        footnote={`${SENSOR_COVERAGE.equipped} of ${SENSOR_COVERAGE.total} accounts also have the optional desktop app. The other ${
           SENSOR_COVERAGE.total - SENSOR_COVERAGE.equipped
-        } are cloud-only and are scored on the cloud plane alone, with two detectors unavailable and marked as such on their investigation pages.`}
+        } are checked using cloud activity only, so two signals that need the app are missing for them; their case pages say so.`}
       >
         <ConnectorStrip />
       </Panel>
 
       <p className="mt-4 text-xs leading-relaxed text-slate-500">
-        {SUBJECTS.length} identities are in scope on the pinned synthetic day.
-        Nothing on this screen is computed at runtime: every figure is a
-        fixture, and the relationships between them are asserted by a verifier
-        that runs as part of the build.
+        This demo covers {SUBJECTS.length} made-up accounts and {AGENT_SUBJECTS.length} AI agent
+        on a single example day, 14 September 2026. All figures were prepared in advance and
+        checked automatically so they agree with each other.
       </p>
     </>
   );

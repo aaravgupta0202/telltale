@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronDown, Play } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronDown, Footprints, Play } from "lucide-react";
 import { cn } from "cn";
 import { DEMO_SCENARIOS, normalisePath } from "@/lib/nav";
+import { TOUR_STEPS } from "@/lib/tour";
+import { setTourActive, useTourActive } from "./walkthrough";
 
 const TONE_DOT: Record<string, string> = {
   "/demo/subject/8830": "bg-emerald-500",
   "/demo/subject/4912": "bg-red-500",
   "/demo/subject/2071": "bg-amber-500",
+  "/demo/subject/A-0317": "bg-violet-500",
 };
 
 /**
@@ -21,16 +24,22 @@ const TONE_DOT: Record<string, string> = {
  * It is a horizontal strip rather than a panel, and it collapses, because a
  * fixed block in the bottom-right corner sits on top of the last rows of
  * every table on every page — which is exactly where a judge scrolls to.
+ * While the walkthrough runs it steps aside: the walkthrough bar takes the
+ * same slot.
  *
- * These three labels are the only place the presenter shorthand names
- * appear (PRD §6). Inside the investigation UI a subject is a pseudonym.
+ * These labels are the only place the presenter shorthand names appear
+ * (PRD §6). Inside the investigation UI a subject is a pseudonym.
  */
 export function DemoLauncher() {
   const [open, setOpen] = useState(true);
   const pathname = normalisePath(usePathname());
+  const router = useRouter();
+  const touring = useTourActive();
+
+  if (touring) return null;
 
   return (
-    <div className="fixed right-4 bottom-4 left-4 z-40 flex max-w-full items-stretch overflow-hidden rounded-sm border border-line bg-white shadow-lg sm:left-auto sm:w-auto">
+    <div className="fixed right-4 bottom-4 left-4 z-40 flex max-w-full items-stretch overflow-hidden rounded-sm border border-line bg-white shadow-lg sm:left-auto sm:w-auto sm:max-w-[calc(100vw-2rem)]">
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -49,6 +58,19 @@ export function DemoLauncher() {
 
       {open && (
         <ul className="flex items-stretch divide-x divide-line overflow-x-auto">
+          <li className="flex">
+            <button
+              type="button"
+              onClick={() => {
+                setTourActive(true);
+                router.push(TOUR_STEPS[0].href);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-emerald-800 hover:bg-emerald-50"
+            >
+              <Footprints className="size-3.5" />
+              Start the walkthrough
+            </button>
+          </li>
           {DEMO_SCENARIOS.map((s) => {
             const active = pathname === s.href;
             const dot = TONE_DOT[s.href] ?? "bg-emerald-500";

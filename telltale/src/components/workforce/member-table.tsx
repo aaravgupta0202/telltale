@@ -69,7 +69,7 @@ export function MemberTable() {
           <span className="label text-[10px] text-slate-500">Sort by:</span>
           <select
             value={sort}
-            onChange={(e) => setSort(e.target.value as any)}
+            onChange={(e) => setSort(e.target.value as typeof sort)}
             className="h-7 rounded border border-line bg-white px-2 text-xs text-slate-700 focus:border-emerald-600 focus:outline-none"
           >
             <option value="roster">Roster order</option>

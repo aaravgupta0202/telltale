@@ -94,7 +94,7 @@ export function NoiseBar() {
         <li className="flex items-center gap-3 px-2 py-2 bg-slate-50 mt-1 rounded border border-line">
           <span className="size-2.5 shrink-0" />
           <span className="min-w-0 flex-1 text-xs font-bold text-slate-900">
-            Raised anomalies
+            All unusual events
           </span>
           <span className="machine w-10 shrink-0 text-right text-xs text-slate-900 font-semibold">
             100%

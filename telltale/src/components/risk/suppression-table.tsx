@@ -57,7 +57,7 @@ export function SuppressionTable() {
     <div>
       <div className="flex flex-wrap items-center gap-1.5 border-b border-line bg-slate-50/70 px-4 py-2.5">
         <span className="label mr-1 text-slate-500 text-[10px]">
-          Reason code
+          Reason
         </span>
         <Chip
           active={reason === ALL}
@@ -105,7 +105,7 @@ export function SuppressionTable() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search #id, reason, record..."
+            placeholder="Search by #ID, reason or record..."
             className="h-7 w-48 rounded-sm border border-line bg-white pl-7 pr-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none transition-colors"
           />
         </div>
@@ -173,11 +173,11 @@ export function SuppressionTable() {
                     <td className="px-3 py-2.5">
                       {s.underReview ? (
                         <span className="label rounded border border-red-200 bg-red-50 px-2 py-0.5 text-red-800 font-bold">
-                          Under review
+                          Reopened
                         </span>
                       ) : (
                         <span className="label text-emerald-700 font-semibold">
-                          Retained
+                          Kept
                         </span>
                       )}
                     </td>
@@ -193,7 +193,7 @@ export function SuppressionTable() {
                       <td />
                       <td colSpan={6} className="px-3 pt-2 pb-4">
                         <p className="label mb-2 text-slate-500 text-[10px] font-bold">
-                          Context record examined
+                          The record that explained it
                         </p>
                         <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-1.5 text-xs">
                           <Pair k="Record ID" v={s.record.recordId} mono />
@@ -220,19 +220,18 @@ export function SuppressionTable() {
                         {s.underReview && (
                           <div className="mt-3 rounded-sm border border-red-200 bg-white px-4 py-3 ">
                             <p className="text-xs leading-relaxed text-slate-800">
-                              This suppression rested on a record the subject
-                              created and assigned to themselves. The
-                              manufactured-context detector fired on the record
-                              itself, the suppression was reopened, and the
-                              anomaly was re-scored with the context term
-                              inverted from a discount to a penalty.
+                              This was closed because of a ticket, but the
+                              person wrote that ticket and assigned it to
+                              themselves. tellTale spotted that, reopened the
+                              case, and now counts the ticket against them
+                              instead of in their favour.
                             </p>
                             {s.linkedSubjectId && (
                               <Link
                                 href={`/demo/subject/${routeIdFor(s.linkedSubjectId)}`}
                                 className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-red-700 hover:text-red-900 hover:underline"
                               >
-                                Open the investigation this reopened →
+                                Open the reopened case →
                               </Link>
                             )}
                           </div>
@@ -240,12 +239,10 @@ export function SuppressionTable() {
 
                         {!s.underReview && (
                           <p className="mt-2.5 max-w-3xl text-xs leading-relaxed text-slate-600">
-                            The anomaly was real and the explanation was
-                            checked. The record was created by an identity other
-                            than the subject, before the activity, with a scope
-                            that resolves to the resources touched. Nothing was
-                            deleted — this row is queryable and the suppression
-                            is reversible.
+                            The activity was unusual, and the explanation was
+                            checked: someone else created the record, before the
+                            activity, for the system that was touched. Nothing
+                            was deleted, and the decision can be reversed.
                           </p>
                         )}
                       </td>

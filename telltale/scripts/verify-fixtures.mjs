@@ -20,6 +20,11 @@
  *  12. Marcus's CONTEXT lane is empty where his TRAJECTORY lane is busiest
  *  13. no real name in the risk module, no risk score in the workforce module,
  *      no productivity classification anywhere
+ *  14. the AI agent closes the same chain and ranks where the queue says
+ *  15. every assistant answer cites events that exist on its page, and every
+ *      number it prints is a number the page prints
+ *  16. every "Try to fool it" row follows the stated rules and its score
+ *      recomputes from σ
  *
  *   node scripts/verify-fixtures.mjs
  */
@@ -51,6 +56,18 @@ const {
   MEMBERS,
   MEMBER_DAYS,
   CAPTURES,
+  SCORED_SUBJECTS,
+  AGENT_SUBJECTS,
+  AGENT_DOSSIERS,
+  AGENT_TIMELINES,
+  AGENT_PEERS,
+  ASSISTANT_QA,
+  ASSISTANT_NOTE,
+  FOOL_TABLE,
+  FOOL_BEHAVIOUR_LOGIT,
+  FOOL_INDICATOR,
+  JURISDICTION_PROFILES,
+  NEVER_COLLECTED,
 } = fx;
 
 let failures = 0;
@@ -112,7 +129,7 @@ for (const d of ALL_DOSSIERS) {
     `round(${(p * 100).toFixed(4)}) = ${Math.round(p * 100)}, stated ${d.risk}`,
   );
 
-  const subject = SUBJECTS.find((s) => s.id === d.subjectId);
+  const subject = SCORED_SUBJECTS.find((s) => s.id === d.subjectId);
   ok(subject !== undefined, `${d.subjectId}: dossier has a subject in the population`);
   if (subject) {
     ok(
@@ -164,7 +181,7 @@ for (const d of ALL_DOSSIERS) {
   // The context term is one of the four stated γ values, and it matches the
   // verdict the queue shows for the same subject.
   const context = d.contributions.find((c) => c.feature === CONTEXT_FEATURE);
-  const subject = SUBJECTS.find((s) => s.id === d.subjectId);
+  const subject = SCORED_SUBJECTS.find((s) => s.id === d.subjectId);
   const GAMMA = { authorised: -2.6, partial: -1.1, absent: 0, suspicious: 2.2 };
   if (subject) {
     ok(
@@ -234,24 +251,25 @@ for (const d of ALL_DOSSIERS) {
 /* ------------------ the queue's Top signal names the largest term shown */
 
 section("Top signal — the queue names the largest term in the table");
+// Technical keywords, plus the plain-language phrasing the queue now uses.
 const SIGNAL_KEYWORDS = {
-  "Trajectory surprisal": ["trajectory", "perplexity"],
+  "Trajectory surprisal": ["trajectory", "perplexity", "order of actions"],
   "Deception trigger": ["honeytoken", "decoy"],
-  "Presence divergence": ["presence"],
-  "Novel egress path": ["egress"],
-  "Cohort divergence": ["divergence"],
-  "Off-hours activity": ["off-hours"],
-  "Graph topology change": ["graph topology"],
+  "Presence divergence": ["presence", "laptop was locked"],
+  "Novel egress path": ["egress", "sent data"],
+  "Cohort divergence": ["divergence", "drifting"],
+  "Off-hours activity": ["off-hours", "unusual hours"],
+  "Graph topology change": ["graph topology", "outside contacts"],
   "Privilege change": ["privilege", "permission"],
-  "Composition drift": ["composition"],
+  "Composition drift": ["composition", "type of work"],
   "Device novelty": ["device"],
-  "Volumetric deviation": ["volumetric"],
-  "Resource novelty": ["resource novelty", "repository access"],
-  "Manufactured-context indicator": ["manufactured context"],
+  "Volumetric deviation": ["volumetric", "more activity"],
+  "Resource novelty": ["resource novelty", "repository access", "first time"],
+  "Manufactured-context indicator": ["manufactured context", "own ticket"],
   "Employment signal": ["employment", "resignation"],
 };
 for (const d of ALL_DOSSIERS) {
-  const subject = SUBJECTS.find((s) => s.id === d.subjectId);
+  const subject = SCORED_SUBJECTS.find((s) => s.id === d.subjectId);
   if (!subject) continue;
   const anomaly = d.contributions.filter(
     (c) => c.feature !== INTERCEPT_FEATURE && c.feature !== CONTEXT_FEATURE && c.logit > 0,
@@ -308,7 +326,7 @@ for (const c of COHORT_STATS) {
 /* ------------------------------------------- 8-9: expected cost and sort */
 
 section("Queue — expected cost, and the intentional risk inversion");
-for (const s of SUBJECTS) {
+for (const s of SCORED_SUBJECTS) {
   ok(
     r2(s.risk * s.assetCriticality) === s.expectedCost,
     `${s.pseudonym}: expectedCost = risk × assetCriticality`,
@@ -335,7 +353,7 @@ ok(
   "row 2 carries a higher raw risk than row 1 (PRD §5.2)",
   `row 1 risk ${QUEUE_ROWS[0].risk}, row 2 risk ${QUEUE_ROWS[1].risk}`,
 );
-ok(QUEUE_ROWS.length === 14, "queue has 14 rows", `got ${QUEUE_ROWS.length}`);
+ok(QUEUE_ROWS.length === 15, "queue has 15 rows (14 from the population, 1 AI agent)", `got ${QUEUE_ROWS.length}`);
 ok(
   !QUEUE_ROWS.some((r) => r.id === "subject_8830"),
   "Priya (#8830) is not in the queue — she was suppressed",
@@ -377,7 +395,7 @@ ok(
 
 // Cloud-only subjects must visibly omit the two Sensor detectors.
 for (const d of ALL_DOSSIERS) {
-  const subject = SUBJECTS.find((s) => s.id === d.subjectId);
+  const subject = SCORED_SUBJECTS.find((s) => s.id === d.subjectId);
   if (!subject || subject.sensorEquipped) continue;
   const features = d.contributions.map((c) => c.feature);
   ok(
@@ -558,7 +576,7 @@ for (const row of QUEUE_ROWS) {
 }
 
 for (const d of ALL_DOSSIERS) {
-  const subject = SUBJECTS.find((x) => x.id === d.subjectId);
+  const subject = SCORED_SUBJECTS.find((x) => x.id === d.subjectId);
   if (subject && subject.verdict === "authorised") {
     ok(
       d.attackPath.edges.every((e) => !e.anomalous),
@@ -683,7 +701,15 @@ ok(
 );
 
 section("Hard content constraints — PRD §7");
-const RISK_MODULE_TEXT = JSON.stringify([ALL_DOSSIERS, TIMELINES, SUBJECTS, QUEUE_ROWS, SUPPRESSIONS]);
+const RISK_MODULE_TEXT = JSON.stringify([
+  ALL_DOSSIERS,
+  TIMELINES,
+  SCORED_SUBJECTS,
+  QUEUE_ROWS,
+  SUPPRESSIONS,
+  ASSISTANT_QA,
+  FOOL_TABLE,
+]);
 for (const m of MEMBERS) {
   ok(
     !RISK_MODULE_TEXT.includes(m.name),
@@ -720,6 +746,188 @@ ok(
   SUBJECTS.every((s) => !/[a-z]/i.test(s.pseudonym.replace("#", ""))),
   "risk subjects are pseudonymous throughout",
 );
+
+/* ------------------------------------------------- 14: the AI agent */
+
+section("AI agent — registered outside the population, scored by the same chain");
+ok(AGENT_SUBJECTS.length >= 1, "at least one AI agent is registered");
+ok(
+  AGENT_SUBJECTS.every((s) => s.identityClass === "agent"),
+  "every registered agent carries identity class 'agent'",
+);
+ok(
+  AGENT_SUBJECTS.every((s) => /^#A-\d{4}$/.test(s.pseudonym) && typeof s.label === "string"),
+  "agent pseudonyms are #A-NNNN and each carries its configured name",
+);
+ok(
+  new Set(SCORED_SUBJECTS.map((s) => s.pseudonym)).size === SCORED_SUBJECTS.length,
+  "pseudonyms are unique across the population and the agents",
+);
+ok(
+  AGENT_SUBJECTS.every((s) => !SUBJECTS.some((p) => p.id === s.id)),
+  "agents are not counted in the 100-identity population",
+);
+for (const s of AGENT_SUBJECTS) {
+  const d = AGENT_DOSSIERS.find((x) => x.subjectId === s.id);
+  ok(!!d, `${s.pseudonym}: has a dossier`);
+  ok(
+    AGENT_TIMELINES.some((t) => t.subjectId === s.id),
+    `${s.pseudonym}: has a composite timeline`,
+  );
+  const row = QUEUE_ROWS.find((r) => r.id === s.id);
+  ok(!!row, `${s.pseudonym}: is in the queue`);
+  ok(!!row && row.rank <= 3, `${s.pseudonym}: ranks in the top three of the queue`, `rank ${row?.rank}`);
+  ok(!s.sensorEquipped, `${s.pseudonym}: an agent carries no endpoint Sensor`);
+  if (d) {
+    ok(
+      d.comparison.stats === AGENT_PEERS,
+      `${s.pseudonym}: compared against the agent peer group, not a human cohort`,
+    );
+    const nodes = d.attackPath.nodes.map((n) => n.label);
+    ok(
+      nodes.includes("db.query") && nodes.includes("http.post"),
+      `${s.pseudonym}: the action path shows the data query and the outbound POST`,
+    );
+    const largest = d.contributions
+      .filter((c) => c.feature !== INTERCEPT_FEATURE && c.feature !== CONTEXT_FEATURE)
+      .reduce((a, b) => (b.logit > a.logit ? b : a));
+    ok(
+      largest.feature === "Trajectory surprisal",
+      `${s.pseudonym}: detected by trajectory — the largest term is the sequence, not the login`,
+      largest.feature,
+    );
+    const geo = d.contributions.find((c) => c.feature === "Geo / ASN novelty");
+    ok(geo?.logit === 0, `${s.pseudonym}: the login itself contributes nothing`, `${geo?.logit}`);
+  }
+}
+ok(
+  QUEUE_ROWS.length > 1 && QUEUE_ROWS[1].risk > QUEUE_ROWS[0].risk,
+  "adding the agent keeps the row 1 / row 2 inversion intact",
+);
+
+/* -------------------------------------------- 15: the case assistant */
+
+section("Case assistant — every answer cites events on its own page");
+ok(
+  typeof ASSISTANT_NOTE === "string" && /never changes a score/.test(ASSISTANT_NOTE),
+  "the assistant note says a model never changes a score",
+);
+for (const [subjectId, qa] of Object.entries(ASSISTANT_QA)) {
+  const d = ALL_DOSSIERS.find((x) => x.subjectId === subjectId);
+  ok(!!d, `${subjectId}: assistant answers belong to a subject with a dossier`);
+  if (!d) continue;
+  ok(qa.length >= 4 && qa.length <= 6, `${subjectId}: 4–6 pre-written questions`, `got ${qa.length}`);
+  ok(new Set(qa.map((q) => q.question)).size === qa.length, `${subjectId}: questions are distinct`);
+
+  const logits = d.contributions.map((c) => c.logit);
+  const anomaly = sumCents(
+    d.contributions
+      .filter((c) => c.feature !== INTERCEPT_FEATURE && c.feature !== CONTEXT_FEATURE)
+      .map((c) => c.logit),
+  );
+  const context = d.contributions.find((c) => c.feature === CONTEXT_FEATURE)?.logit ?? 0;
+  const ids = new Set(d.evidence.map((e) => e.id));
+
+  for (const q of qa) {
+    const tag = `${subjectId} "${q.question}"`;
+    ok(q.cites.length > 0, `${tag}: cites at least one event`);
+    for (const id of q.cites) {
+      ok(ids.has(id), `${tag}: cited event ${id} is in this page's evidence list`);
+    }
+    for (const m of q.answer.matchAll(/\bScore (\d+)\b/g)) {
+      ok(Number(m[1]) === d.risk, `${tag}: "Score ${m[1]}" is the dossier risk`, `risk ${d.risk}`);
+    }
+    for (const m of q.answer.matchAll(/([+−-])(\d+\.\d{2})\b/g)) {
+      const v = Number(m[2]) * (m[1] === "+" ? 1 : -1);
+      ok(
+        logits.includes(v) || v === anomaly,
+        `${tag}: ${m[0]} is a contribution printed in the table`,
+        `contributions ${logits.join(", ")}; anomaly sum ${anomaly}`,
+      );
+    }
+    for (const m of q.answer.matchAll(/would be about (\d+)/g)) {
+      const expected = Math.round(sigma(r2(d.logitTotal - context)) * 100);
+      ok(
+        Number(m[1]) === expected,
+        `${tag}: "would be about ${m[1]}" is the score without the context term`,
+        `σ(${d.logitTotal} − ${context}) × 100 = ${expected}`,
+      );
+    }
+  }
+}
+for (const id of ["subject_4912", "subject_2071", "subject_8830", "subject_A-0317"]) {
+  ok(!!ASSISTANT_QA[id], `${id}: scenario page has an assistant`);
+}
+
+/* --------------------------------------------- 16: try to fool it */
+
+section("Try to fool it — every row follows the stated rules");
+const GAMMA_TABLE = { authorised: -2.6, partial: -1.1, absent: 0, suspicious: 2.2 };
+const combos = new Set(FOOL_TABLE.map((r) => [r.author, r.lead, r.target, r.breadth].join("|")));
+ok(
+  FOOL_TABLE.length === 24 && combos.size === 24,
+  "the table covers all 2 × 3 × 2 × 2 = 24 combinations once",
+  `${FOOL_TABLE.length} rows, ${combos.size} distinct`,
+);
+ok(
+  FOOL_BEHAVIOUR_LOGIT === sumCents([-1.9, 0.26, 0.15, 0.08, 0.07]),
+  "the fixed behaviour term is #2071's intercept plus anomaly terms, without the indicator",
+);
+const danaFull = ALL_DOSSIERS.find((x) => x.subjectId === "subject_2071");
+ok(
+  danaFull?.contributions.find((c) => c.feature === "Manufactured-context indicator")?.logit === FOOL_INDICATOR,
+  "the self-made-ticket indicator is #2071's printed value",
+);
+for (const r of FOOL_TABLE) {
+  const tag = `${r.author}/${r.lead}/${r.target}/${r.breadth}`;
+  const t = {
+    precedence: r.lead === "after" ? "fail" : "pass",
+    provenance: r.author === "self" ? "fail" : "pass",
+    scope: r.target === "other" ? "fail" : "pass",
+    proportionality: r.breadth === "40" ? "fail" : "pass",
+  };
+  ok(
+    Object.entries(t).every(([k, v]) => r.tests[k] === v),
+    `${tag}: test results follow the toggles`,
+    JSON.stringify(r.tests),
+  );
+  const verdict =
+    t.provenance === "fail"
+      ? "suspicious"
+      : t.scope === "fail"
+        ? "absent"
+        : t.precedence === "pass" && t.proportionality === "pass"
+          ? "authorised"
+          : "partial";
+  ok(r.verdict === verdict, `${tag}: verdict is ${verdict}`, r.verdict);
+  ok(r.gamma === GAMMA_TABLE[r.verdict], `${tag}: context term is the stated γ`, `${r.gamma}`);
+  const indicator = r.author === "self" && r.lead !== "1d" ? FOOL_INDICATOR : 0;
+  ok(r.indicator === indicator, `${tag}: indicator fires only on a self-made ticket under a day old`);
+  ok(
+    r.logit === sumCents([FOOL_BEHAVIOUR_LOGIT, r.indicator, r.gamma]),
+    `${tag}: logit = behaviour + indicator + γ`,
+    `${r.logit}`,
+  );
+  ok(Math.round(sigma(r.logit) * 100) === r.risk, `${tag}: risk = round(σ(logit) × 100)`, `${r.risk}`);
+}
+const danaRow = FOOL_TABLE.find(
+  (r) => r.author === "self" && r.lead === "40m" && r.target === "this" && r.breadth === "1",
+);
+ok(
+  danaRow?.risk === 78 && danaRow?.logit === 1.27,
+  "the #2071 configuration reproduces #2071's printed score",
+  `${danaRow?.risk}`,
+);
+
+section("Legality — profiles and the never-collected list");
+ok(JURISDICTION_PROFILES.length === 4, "four jurisdiction profiles");
+const eu = JURISDICTION_PROFILES.find((p) => p.id === "eu");
+ok(eu?.features.scheduledCapture === "off", "EU profile has no scheduled screenshots");
+const forensic = JURISDICTION_PROFILES.find((p) => p.id === "forensic");
+ok(forensic?.features.workforce === "off", "Forensic-only profile has no workforce module");
+for (const n of ["Keystrokes", "File contents", "Source code"]) {
+  ok(NEVER_COLLECTED.includes(n), `never collected: ${n}`);
+}
 
 /* ------------------------------------------------------------- report */
 

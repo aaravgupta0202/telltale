@@ -9,6 +9,7 @@ import type {
   Sensitivity,
   TimelineTick,
 } from "@/lib/fixtures";
+import { VERDICT_PLAIN, actionPlain } from "@/lib/plain";
 
 /**
  * PRD §5.3B — the composite timeline. Hand-built SVG, not a chart library:
@@ -104,6 +105,7 @@ export function CompositeTimelineChart({
     <div>
       <div className="flex items-center justify-between gap-4 border-b border-line px-4 py-2">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <span className="text-[11px] font-semibold text-grey">How sensitive:</span>
           <Legend swatch="var(--tt-grey)" label="low" />
           <Legend swatch="var(--tt-purple)" label="medium" />
           <Legend swatch="var(--tt-amber)" label="high" />
@@ -119,13 +121,13 @@ export function CompositeTimelineChart({
                 strokeWidth="1.4"
               />
             </svg>
-            <span className="text-[11px] text-grey">first ever</span>
+            <span className="text-[11px] text-grey">first time ever</span>
           </span>
         </div>
         <p className="machine text-xs text-grey">
           {cursorT === null
-            ? "hover for a crosshair"
-            : `${hhmm(cursorT)} · risk ${riskAt(cursorT)}`}
+            ? "hover to see the score at any time"
+            : `${hhmm(cursorT)} · score ${riskAt(cursorT)}`}
         </p>
       </div>
 
@@ -250,7 +252,7 @@ export function CompositeTimelineChart({
                   fill="var(--tt-red)"
                   className="label"
                 >
-                  ↑ No authorising record · {hhmm(g.from + 8)}–{hhmm(g.to - 8)}
+                  ↑ Nothing approved this · {hhmm(g.from + 8)}–{hhmm(g.to - 8)}
                 </text>
               </g>
             ))}
@@ -260,20 +262,20 @@ export function CompositeTimelineChart({
               [
                 [
                   "session",
-                  "SESSION",
-                  `${timeline.session.length} auth events`,
+                  "LOGINS",
+                  `${timeline.session.length} login events`,
                 ],
                 [
                   "trajectory",
-                  "TRAJECTORY",
+                  "ACTIONS",
                   `${timeline.trajectory.length} actions`,
                 ],
                 [
                   "context",
-                  "CONTEXT",
-                  `${timeline.context.length} record${timeline.context.length === 1 ? "" : "s"}`,
+                  "APPROVED BY",
+                  `${timeline.context.length} ticket${timeline.context.length === 1 ? "" : "s"} / records`,
                 ],
-                ["risk", "RISK", "calibrated 0–100"],
+                ["risk", "SCORE", "0 to 100"],
               ] as const
             ).map(([key, label, sub]) => (
               <g key={key}>
@@ -333,7 +335,7 @@ export function CompositeTimelineChart({
                         lines: [
                           bar.label,
                           `${hhmm(bar.from)} → ${hhmm(bar.to)}`,
-                          bar.verdict.toUpperCase(),
+                          VERDICT_PLAIN[bar.verdict],
                         ],
                         tone: CONTEXT_FILL[bar.verdict],
                       })
@@ -349,7 +351,7 @@ export function CompositeTimelineChart({
                       fill={CONTEXT_FILL[bar.verdict]}
                     >
                       {bar.recordId}
-                      {suspicious ? " · provenance failed" : ""}
+                      {suspicious ? " · written by themselves" : ""}
                     </text>
                   )}
                 </g>
@@ -390,8 +392,8 @@ export function CompositeTimelineChart({
                   className="machine"
                   fill="var(--tt-red)"
                 >
-                  ↑ {precedence.to - precedence.from}m after the record the
-                  subject created
+                  ↑ {precedence.to - precedence.from} min after they wrote their
+                  own ticket
                 </text>
               </g>
             )}
@@ -552,13 +554,13 @@ function Tick({
         onHover({
           x: cx,
           y: LANES[lane].top,
-          title: tick.action,
+          title: actionPlain(tick.action),
           lines: [
-            tick.ts.replace("T", " ").replace("Z", " IST"),
+            `${tick.ts.slice(11, 19)} · ${tick.action}`,
             tick.resource
-              ? `resource · ${tick.resource}`
+              ? `on ${tick.resource}`
               : `${tick.sensitivity} sensitivity`,
-            [tick.note, tick.firstEver ? "first ever in 180d" : null]
+            [tick.note, tick.firstEver ? "first time in 180 days" : null]
               .filter(Boolean)
               .join(" · "),
           ].filter(Boolean),

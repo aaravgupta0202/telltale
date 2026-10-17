@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Panel } from "@/components/panel";
+import { AssistantPanel } from "@/components/risk/assistant-panel";
 import { AttackPath } from "@/components/risk/attack-path";
 import { CohortStrip } from "@/components/risk/cohort-strip";
 import { CompositeTimelineChart } from "@/components/risk/composite-timeline";
@@ -9,9 +10,11 @@ import { EvidenceList } from "@/components/risk/evidence-list";
 import { InvestigationHeader } from "@/components/risk/investigation-header";
 import {
   ALL_DOSSIERS,
+  ASSISTANT_NOTE,
+  ASSISTANT_QA,
   dossierFor,
   routeIdFor,
-  subjectById,
+  subjectFor,
   timelineFor,
 } from "@/lib/fixtures";
 
@@ -29,31 +32,43 @@ export default async function SubjectPage(props: PageProps<"/demo/subject/[id]">
   const { id } = await props.params;
   const subjectId = `subject_${id}`;
   const dossier = dossierFor(subjectId);
-  const subject = subjectById(subjectId);
+  const subject = subjectFor(subjectId);
   const timeline = timelineFor(subjectId);
   if (!dossier || !subject || !timeline) notFound();
+  const qa = ASSISTANT_QA[subjectId];
 
   return (
     <>
       <InvestigationHeader subject={subject} dossier={dossier} />
 
       <div className="flex flex-col gap-4">
+        {qa && (
+          <Panel
+            title="Case assistant"
+            sub="Pick a question to get a plain-English answer. Answers use only the events in this case and list which ones they used."
+            bodyClassName="p-0"
+            footnote={`${ASSISTANT_NOTE} Log text is treated as untrusted before any model reads it.`}
+          >
+            <AssistantPanel qa={qa} evidence={dossier.evidence} />
+          </Panel>
+        )}
+
         <Panel
-          title="Activity timeline"
-          sub="Authentication, actions, and authorising records plotted on a single hour axis for clear chronological correlation."
+          title="What happened, hour by hour"
+          sub="Four rows on one clock for the whole day: logins, actions, the tickets or records that approved the work, and how the score changed."
           bodyClassName="p-0"
-          footnote="Every tick is an event reported by connected tools. The CONTEXT lane shows whether an authorizing ticket existed at that moment."
+          footnote="Hover over any mark to see what it was. The colour of a mark shows how sensitive the action was; a ring means this account did it for the first time ever. All times are on 14 Sep 2026."
         >
           <CompositeTimelineChart timeline={timeline} />
         </Panel>
 
         <Panel
-          title="Why it scored"
-          sub="Clear breakdown of factors contributing to the score: each factor adds or subtracts from the overall total with full transparency."
+          title={`Why it scored ${dossier.risk}`}
+          sub="Each row is one signal. Red points raise the score, green points lower it, and grey rows found nothing unusual. Together they add up to the final score."
           bodyClassName="p-0"
           footnote={
             dossier.sensorNote ??
-            "Every row names the evidence it was derived from. A factor with no deviation contributes zero and is shown for transparency."
+            "Rows with zero points are shown anyway, so you can see what was checked and found normal."
           }
         >
           <ContributionTable
@@ -65,16 +80,16 @@ export default async function SubjectPage(props: PageProps<"/demo/subject/[id]">
         </Panel>
 
         <Panel
-          title="Context verification"
-          sub="Automated tests against the work ticket: a record is accepted only when author, timing, and scope all match."
+          title="Is the approval genuine?"
+          sub="tellTale looked for a ticket, on-call shift or HR record that explains this activity, then ran four checks on it."
           bodyClassName="p-0"
         >
           <ContextChecks checks={dossier.checks} verdict={subject.verdict} />
         </Panel>
 
         <Panel
-          title="Action path"
-          sub="Sequence of actions visualized as steps between systems, measuring transition frequency across the team."
+          title="The key steps, in order"
+          sub="The main actions in this case. The number on each arrow is how often that step normally follows the one before it in this company. Red arrows are very rare."
           bodyClassName="p-0"
         >
           <AttackPath
@@ -84,16 +99,16 @@ export default async function SubjectPage(props: PageProps<"/demo/subject/[id]">
         </Panel>
 
         <Panel
-          title="Cohort comparison"
-          sub="Subject activity compared against team peers doing the same job, identifying whether volume is normal or an outlier."
+          title="Compared with teammates"
+          sub="How many different systems and files this account touched, next to others in the same role. Each dot is a teammate; the red diamond is this account."
           bodyClassName="p-0"
         >
           <CohortStrip comparison={dossier.comparison} />
         </Panel>
 
         <Panel
-          title="Evidence list"
-          sub="Collected metadata artefacts, tagged and flagged by analysts (metadata only: no message bodies or raw file contents)."
+          title="Evidence"
+          sub="The underlying records for this case. Only activity details are kept (who did what, where and when), never message text or file contents. You can tag or flag items as you review."
           bodyClassName="p-0"
         >
           <EvidenceList items={dossier.evidence} />

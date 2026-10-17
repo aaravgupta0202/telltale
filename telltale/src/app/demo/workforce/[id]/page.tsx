@@ -65,7 +65,7 @@ export default async function MemberPage(props: PageProps<"/demo/workforce/[id]"
             <Field label="Idle" mono>
               {fmtHours(member.idleMinutes)}
             </Field>
-            <Field label="Top application">
+            <Field label="Most-used app">
               <span className="flex items-center gap-1.5">
                 <BrandIcon name={member.topApplication} className="size-4" />
                 <span>{member.topApplication}</span>
@@ -89,8 +89,8 @@ export default async function MemberPage(props: PageProps<"/demo/workforce/[id]"
       <div className="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-[1fr_1.1fr]">
         <Panel
           title="Time by category"
-          sub="Where input activity fell, by application category."
-          footnote="Categories describe composition, not merit. No category is labelled productive or unproductive, and no score is computed from this breakdown."
+          sub="Where working time went, by type of app."
+          footnote="Types of app describe how time was spent, not how well. Nothing here is rated, and no score is calculated from it."
         >
           <CategoryDonut data={day.categoryTime} />
         </Panel>
@@ -150,8 +150,8 @@ export default async function MemberPage(props: PageProps<"/demo/workforce/[id]"
       </div>
 
       <Panel
-        title="Applications and window titles"
-        sub="The nine longest-running windows of the day. Window titles are metadata (no message body, file content or typed text is collected or shown)."
+        title="Apps and window titles"
+        sub="The nine windows open longest today. Only the window title is recorded, never message text, file contents or anything typed."
         bodyClassName="p-0"
         className="mb-4"
       >
@@ -221,8 +221,8 @@ export default async function MemberPage(props: PageProps<"/demo/workforce/[id]"
       </Panel>
 
       <Panel
-        title="Captures"
-        sub={`${captures.length} on the pinned day. Thumbnails are generated, or a generic reference image for a few applications (never a capture of a real screen).`}
+        title="Screenshots"
+        sub={`${captures.length} on the example day. Pictures are generated or generic samples, never a real screen.`}
         right={
           <Link
             href="/demo/workforce/captures"

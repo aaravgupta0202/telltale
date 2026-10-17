@@ -84,19 +84,19 @@ export function EvidenceList({ items }: { items: EvidenceItem[] }) {
             <li
               key={item.id}
               className={cn(
-                "flex items-start gap-4 border-l-2 px-4 py-2.5 transition-colors",
+                "flex flex-wrap items-start gap-x-4 gap-y-1.5 border-l-2 px-4 py-2.5 transition-colors sm:flex-nowrap",
                 flag
                   ? "border-l-red-500 bg-red-50/30"
                   : "border-l-transparent hover:bg-slate-50/50",
               )}
             >
-              <span className="machine w-40 shrink-0 text-xs text-slate-500">
+              <span className="machine shrink-0 text-xs text-slate-500 sm:w-40">
                 {item.ts.replace("T", " ").replace("Z", "")}
               </span>
 
               <span
                 className={cn(
-                  "label w-36 shrink-0 truncate rounded border px-1.5 py-0.5 text-center whitespace-nowrap text-[10px] font-semibold",
+                  "label shrink-0 truncate rounded sm:w-36 border px-1.5 py-0.5 text-center whitespace-nowrap text-[10px] font-semibold",
                   KIND_TONE[item.kind] ??
                     "border-slate-200 bg-slate-100 text-slate-700",
                 )}
@@ -104,7 +104,7 @@ export function EvidenceList({ items }: { items: EvidenceItem[] }) {
                 {item.kind}
               </span>
 
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 basis-full sm:basis-auto">
                 <p className="machine text-xs leading-relaxed text-slate-800">
                   {item.detail}
                 </p>

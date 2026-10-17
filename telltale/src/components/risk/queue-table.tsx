@@ -28,13 +28,13 @@ import {
 
 const HEAD = [
   { label: "Rank", className: "w-14 text-right" },
-  { label: "Subject", className: "w-32" },
-  { label: "Cohort", className: "w-44" },
-  { label: "Risk", className: "w-28" },
-  { label: "Priority score", className: "w-32" },
-  { label: "Trigger signal", className: "min-w-64" },
-  { label: "Context", className: "w-32" },
-  { label: "Age", className: "w-24 text-right" },
+  { label: "Account", className: "w-32" },
+  { label: "Team", className: "w-44" },
+  { label: "Score", className: "w-28" },
+  { label: "Priority", className: "w-32" },
+  { label: "Main reason", className: "min-w-64" },
+  { label: "Approval", className: "w-36" },
+  { label: "Waiting", className: "w-24 text-right" },
   { label: "Status", className: "w-28" },
   { label: "", className: "w-8" },
 ];
@@ -74,15 +74,15 @@ export function QueueTable() {
     <div>
       {/* Table search & quick filter toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-slate-50/70 px-4 py-2.5">
-        <div className="flex items-center gap-2">
-          <div className="relative flex items-center">
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <div className="relative flex w-full items-center sm:w-auto">
             <Search className="absolute left-2.5 size-3.5 text-slate-400" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search alerts by #id, signal, cohort..."
-              className="h-8 w-64 rounded-sm border border-line bg-white pl-8 pr-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none transition-colors"
+              placeholder="Search by #ID, reason or team..."
+              className="h-8 w-full sm:w-64 rounded-sm border border-line bg-white pl-8 pr-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none transition-colors"
             />
           </div>
           {query && (
@@ -95,32 +95,32 @@ export function QueueTable() {
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="label text-[10px] text-slate-500 mr-1 flex items-center gap-1">
-              Sort:
+              Order:
             </span>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               className="h-7 rounded border border-line bg-white px-2 text-xs text-slate-700 focus:border-emerald-600 focus:outline-none"
             >
-              <option value="rank">Recommended (Priority order)</option>
-              <option value="risk">Highest risk first</option>
-              <option value="cost">Highest priority score</option>
+              <option value="rank">Recommended (most urgent first)</option>
+              <option value="risk">Highest score first</option>
+              <option value="cost">Highest priority first</option>
             </select>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="label text-[10px] text-slate-500 mr-1 flex items-center gap-1">
               <Filter className="size-3 text-emerald-600" />
-              Identity:
+              Type:
             </span>
             {[
               { id: "all", label: "All" },
-              { id: "human", label: "Human", Icon: User },
-              { id: "service", label: "Service", Icon: Server },
-              { id: "agent", label: "Agent", Icon: Bot },
+              { id: "human", label: "People", Icon: User },
+              { id: "service", label: "Services", Icon: Server },
+              { id: "agent", label: "AI agents", Icon: Bot },
             ].map(({ id, label, Icon }) => (
               <button
                 key={id}
@@ -165,8 +165,7 @@ export function QueueTable() {
                   colSpan={HEAD.length}
                   className="px-3 py-10 text-center text-sm text-slate-500"
                 >
-                  No queued subject matches this query. Clear search or filters
-                  to see all entries.
+                  Nothing matches. Clear the search or filters to see every case.
                 </td>
               </tr>
             )}
@@ -184,8 +183,8 @@ export function QueueTable() {
                             {TRIAGE_CAPACITY_LABEL}
                           </span>
                           <span className="text-xs text-amber-900/80">
-                            Everything below this line is retained and ranked:
-                            it is simply not pretending to be actionable today.
+                            Cases below this line won&apos;t fit in today&apos;s checking
+                            time. They stay on the list, in order.
                           </span>
                         </div>
                       </td>
@@ -205,7 +204,7 @@ export function QueueTable() {
                       <Link
                         href={href}
                         onClick={(e) => e.stopPropagation()}
-                        className="machine inline-flex items-center gap-1.5 font-bold text-emerald-700 group-hover:text-emerald-900 group-hover:underline transition-colors"
+                        className="machine inline-flex items-center gap-1.5 whitespace-nowrap font-bold text-emerald-700 group-hover:text-emerald-900 group-hover:underline transition-colors"
                       >
                         <IdentityGlyph identityClass={r.identityClass} />
                         {r.pseudonym}
